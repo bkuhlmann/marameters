@@ -2,4 +2,14 @@
 
 == 0.0.0 (2022-03-05)
 
-* Added initial implementation.
+* Added documentation
+* Added Rubocop exclusions
+* Added Reek spec exclusions
+* Added core
+* Added splat
+* Added keyword
+* Added positional
+* Added RSpec parameters shared context
+* Added transformer
+* Added gemspec summary
+* Added project skeleton
