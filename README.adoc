@@ -4,11 +4,24 @@
 
 = Marameters
 
+Marameters is short for method parameters (i.e. [m]ethod + p[arameters] = marameters) which is
+designed to provide additional insight and diagnostics to method parameters. For context, the
+difference between a method's parameters and arguments is:
+
+* *Parameters*: Represents the _expected_ values to be passed to a method when messaged as defined
+  when the method is implemented. Example: `def demo(one, two: nil)`.
+* *Arguments*: Represents the _actual_ values passed to the method when messaged.
+  Example: `demo 1, two :2`.
+
+This gem will help you debug methods or -- more importantly -- aid your workflow when
+metaprogramming and architecting more sophisticated applications.
+
 toc::[]
 
 == Features
 
-== Screencasts
+* Provides a core object as a primary interface.
+* Provides specialized objects for keyword, positional, and splatted parameters.
 
 == Requirements
 
@@ -16,14 +29,67 @@ toc::[]
 
 == Setup
 
-To set up the project, run:
+To install, run:
 
 [source,bash]
 ----
-bin/setup
+gem install marameters
+----
+
+Add the following to your Gemfile file:
+
+[source,ruby]
+----
+gem "marameters"
 ----
 
 == Usage
+
+The primary object you'll most likely want to interact with is the `Marameters::Core` class. The
+following code snippet will help demonstrate the Object API:
+
+[source,ruby]
+----
+class Demo
+  def example one, two = nil, *three, four:, five: nil, **six, &seven
+    [one, two, three, four, five, six, seven]
+  end
+end
+
+marameters = Marameters::Core.new Demo.instance_method(:example).parameters
+
+marameters.empty?                    # false
+marameters.keyword? :one             # false
+marameters.keyword? :four            # true
+marameters.keywords                  # [:four, :five]
+marameters.kinds                     # [:req, :opt, :keyreq, :key, :rest, :keyrest]
+marameters.named_single_splat_only?  # false
+marameters.names                     # [:one, :two, :four, :five, :three, :six]
+marameters.positional?               # true
+marameters.positionals               # [:one, :two]
+marameters.to_a                      # [[:req, :one], [:opt, :two], [:rest, :three], [:keyreq, :four], [:key, :five], [:keyrest, :six], [:block, :seven]]
+marameters.unnamed_splats_only?      # false
+----
+
+The `Marameters::Core` delegates to the following classes which you can use individually as well:
+
+[source,ruby]
+----
+class Demo
+  def example one, two = nil, *three, four:, five: nil, **six, &seven
+    [one, two, three, four, five, six, seven]
+  end
+end
+
+# Specializes in positional method parameters only.
+positional = Marameters::Positional.new Demo.instance_method(:example).parameters
+
+# Specializes in keyword method parameters only.
+keyword = Marameters::Keyword.new Demo.instance_method(:example).parameters
+
+# Specializes in splatted method parameters only.
+splat = Marameters::Splat.new Demo.instance_method(:example).parameters
+----
 
 == Development
 
