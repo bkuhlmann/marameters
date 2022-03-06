@@ -1,3 +1,8 @@
 exclude_paths:
   - tmp
   - vendor
+
+directories:
+  "spec/support/shared_contexts":
+    LongParameterList:
+      enabled: false
