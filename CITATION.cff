@@ -1,7 +1,7 @@
 cff-version: 1.2.0
 message: Please use the following metadata when citing this project in your work.
 title: Marameters
-abstract:
+abstract: Provides method parameter introspection which is useful when metaprogramming.
 version: 0.0.0
 license: Hippocratic-2.1
 date-released: 2022-03-05
