@@ -1,2 +1,10 @@
 inherit_gem:
   caliber: config/all.yml
+
+Lint/UselessMethodDefinition:
+  Exclude:
+    - "spec/lib/marameters/*"
+
+Metrics/ParameterLists:
+  Exclude:
+    - "spec/support/shared_contexts/parameters.rb"
