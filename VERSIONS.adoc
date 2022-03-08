@@ -1,5 +1,14 @@
 = Versions
 
+== 0.1.0 (2022-03-10)
+
+* Added 0.0.0 version details - Brooke Kuhlmann
+* Added analyzer - Brooke Kuhlmann
+* Updated gem summary to include mention of metaprogramming - Brooke Kuhlmann
+* Removed RSpec temp dir shared context - Brooke Kuhlmann
+* Removed original implementation - Brooke Kuhlmann
+
+
 == 0.0.0 (2022-03-05)
 
 * Added documentation
