@@ -2,6 +2,11 @@ exclude_paths:
   - tmp
   - vendor
 
+detectors:
+  TooManyMethods:
+    exclude:
+      - "Marameters::Analyzer"
+
 directories:
   "spec/support/shared_contexts":
     LongParameterList:
