@@ -3,6 +3,10 @@ exclude_paths:
   - vendor
 
 detectors:
+  NilCheck:
+    exclude:
+      - "Marameters::Defaulter#call"
+
   TooManyMethods:
     exclude:
       - "Marameters::Analyzer"
