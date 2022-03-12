@@ -14,7 +14,8 @@ difference between a method's parameters and arguments is:
   Example: `demo 1, two: 2`.
 
 This gem will help you debug methods or -- more importantly -- aid your workflow when
-metaprogramming and architecting more sophisticated applications.
+metaprogramming, as used in the link:https://www.alchemists.io/projects/auto_injector[Auto Injector]
+gem, when architecting more sophisticated applications.
 
 toc::[]
 
@@ -55,9 +56,11 @@ class Demo
     @logger = logger
   end
 
-  def example one, two = nil, *three, four:, five: nil, **six, &seven
+  def all one, two = nil, *three, four:, five: nil, **six, &seven
     logger.debug [one, two, three, four, five, six, seven]
   end
+
+  def none = logger.debug "Nothing to see here."
 
   private
 
@@ -65,11 +68,11 @@ class Demo
 end
 ----
 
-We can then analyze the above `#example` method's parameters as follows:
+We can then analyze the `#all` method's parameters as follows:
 
 [source,ruby]
 ----
-analyzer = Marameters::Analyzer.new Demo.instance_method(:example).parameters
+analyzer = Marameters::Analyzer.new Demo.instance_method(:all).parameters
 
 analyzer.block                # :seven
 analyzer.block?               # true
@@ -89,6 +92,33 @@ analyzer.splats               # [:three, :six]
 analyzer.splats?              # true
 analyzer.to_a                 # [[:req, :one], [:opt, :two], [:rest, :three], [:keyreq, :four], [:key, :five], [:keyrest, :six], [:block, :seven]]
 analyzer.to_h                 # {:req=>:one, :opt=>:two, :rest=>:three, :keyreq=>:four, :key=>:five, :keyrest=>:six, :block=>:seven}
+----
+
+In contrast the above, we can also analyze the `#none` method which has no parameters for a
+completely different result:
+
+[source,ruby]
+----
+analyzer = Marameters::Analyzer.new Demo.instance_method(:none).parameters
+
+analyzer.block                # nil
+analyzer.block?               # false
+analyzer.empty?               # true
+analyzer.keywords             # []
+analyzer.keywords?            # false
+analyzer.kind?(:req)          # true
+analyzer.kinds                # []
+analyzer.name?(:three)        # false
+analyzer.names                # []
+analyzer.only_bare_splats?    # false
+analyzer.only_double_splats?  # false
+analyzer.only_single_splats?  # false
+analyzer.positionals          # []
+analyzer.positionals?         # false
+analyzer.splats               # []
+analyzer.splats?              # false
+analyzer.to_a                 # []
+analyzer.to_h                 # {}
 ----
 
 == Development
