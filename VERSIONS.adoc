@@ -1,5 +1,12 @@
 = Versions
 
+== 0.2.0 (2022-03-12)
+
+* Added additional documentation on methods with no parameters - Brooke Kuhlmann
+* Added builder - Brooke Kuhlmann
+* Added defaulter - Brooke Kuhlmann
+* Added signature - Brooke Kuhlmann
+
 == 0.1.0 (2022-03-10)
 
 * Added 0.0.0 version details - Brooke Kuhlmann

@@ -1,10 +1,10 @@
 cff-version: 1.2.0
 message: Please use the following metadata when citing this project in your work.
 title: Marameters
-abstract: Provides method parameter introspection which is useful when metaprogramming.
-version: 0.1.0
+abstract: Provides dynamic method parameter construction and deconstruction.
+version: 0.2.0
 license: Hippocratic-2.1
-date-released: 2022-03-10
+date-released: 2022-03-12
 authors:
   - family-names: Kuhlmann
     given-names: Brooke

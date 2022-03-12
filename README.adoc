@@ -46,8 +46,16 @@ gem "marameters"
 
 == Usage
 
-The primary object you'll want to interact with is the `Marameters::Analyzer` class. To understand
-how to _analyze_ a method's parameters, consider the following demonstration class:
+There are two main objects you'll want to interact with:
+
+* *Analyzer*: Allows you to analyze a method's parameters.
+* *Signature*: Allows you to dynamically build a method signature.
+
+Both of these objects are meant to serve as building blocks to more complex architectures.
+
+=== Analyzer
+
+To understand how to _analyze_ a method's parameters, consider the following demonstration class:
 
 [source,ruby]
 ----
@@ -68,7 +76,7 @@ class Demo
 end
 ----
 
-We can then analyze the `#all` method's parameters as follows:
+You can then analyze the `#all` method's parameters as follows:
 
 [source,ruby]
 ----
@@ -119,6 +127,92 @@ analyzer.splats               # []
 analyzer.splats?              # false
 analyzer.to_a                 # []
 analyzer.to_h                 # {}
+----
+
+=== Signature
+
+The signature class is the opposite of the analyzer in that you want to feed it parameters for
+turning into a method signature. This is useful when dynamically building method signatures or using
+the same signature for multiple methods when metaprogramming.
+
+The following demonstrates how you might construct a method signature with all possible parameters:
+
+[source,ruby]
+----
+signature = Marameters::Signature.new(
+  {
+    req: :one,
+    opt: [:two, 2],
+    rest: :three,
+    keyreq: :four,
+    key: [:five, 5],
+    keyrest: :six,
+    block: :seven
+  }
+)
+
+puts signature
+# one, two = 2, *three, four:, five: 5, **six, &seven
+----
+
+You'll notice that the parameters is a hash _and_ some values can be tuples. The reason is that it's
+easier to write a hash than a double nested array as normally produced by the analyzer or directly
+from `Method#parameters`. The optional positional and keyword parameters use tuples because you
+might want to supply a default value and this provides a way for you to do that with minimal syntax.
+This can be demonstrated further by using optional keywords (same applies for optional positionals):
+
+[source,ruby]
+----
+# With no default
+puts Marameters::Signature.new({key: :demo})
+# demo: nil
+
+# With explicit nil as default
+puts Marameters::Signature.new({key: [:demo, nil]})
+# demo: nil
+
+# With string as default
+puts Marameters::Signature.new({key: [:demo, "test"]})
+# demo: "test"
+
+# With symbol as default
+puts Marameters::Signature.new({key: [:demo, :test]})
+# demo: :test
+
+# With object(dependency) as default
+puts Marameters::Signature.new({key: [:demo, "*Object.new"]})
+# demo: Object.new
+----
+
+In the case of object dependencies you need to wrap these in a string _and_ prefix them with a star
+(`*`) so the signature builder won't confuse these as a normal string. There are two reasons why
+this is important:
+
+* The star (`*`) signifies that you want the object to be passed through without any further
+  processing while also not being confused normal strings.
+* Objects wrapped as strings allows your dependency to be lazy loaded. Otherwise, if `Object.new`
+  was pass directly, you'd be passing the evaluated instance (i.e. `#<Object:0x0000000107df4028>`)
+  which is not what you want until much later when your method is defined.
+
+When you put all of this together, you can dynamically build a method as follows:
+
+[source,ruby]
+----
+signature = Marameters::Signature.new({opt: [:text, "This is a test."]})
+
+Example = Module.new do
+  module_eval <<~DEFINITION, __FILE__, __LINE__ + 1
+    def self.say #{signature}
+      text
+    end
+  DEFINITION
+end
+
+puts Example.say
+# This is a test.
+
+puts Example.say "Hello"
+# Hello
 ----
 
 == Development
