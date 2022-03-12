@@ -5,6 +5,10 @@ Lint/UselessMethodDefinition:
   Exclude:
     - "spec/lib/marameters/*"
 
+Metrics/CyclomaticComplexity:
+  Exclude:
+    - "lib/marameters/builder.rb"
+
 Metrics/ParameterLists:
   Exclude:
     - "spec/support/shared_contexts/parameters.rb"

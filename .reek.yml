@@ -10,6 +10,9 @@ detectors:
   TooManyMethods:
     exclude:
       - "Marameters::Analyzer"
+  TooManyStatements:
+    exclude:
+      - "Marameters::Builder#call"
 
 directories:
   "spec/support/shared_contexts":
