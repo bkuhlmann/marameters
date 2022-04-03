@@ -4,9 +4,9 @@
 
 = Marameters
 
-Marameters is short for method parameters (i.e. `[m]ethod + p[arameters] = marameters`) which is
-designed to provide additional insight and diagnostics to method parameters. For context, the
-difference between a method's parameters and arguments is:
+Marameters is a portmanteau (i.e. `[m]ethod + p[arameters] = marameters`) which is designed to
+provide additional insight and diagnostics to method parameters. For context, the difference between
+a method's parameters and arguments is:
 
 * *Parameters*: Represents the _expected_ values to be passed to a method when
   messaged as defined when the method is implemented. Example: `def demo(one, two: nil)`.
