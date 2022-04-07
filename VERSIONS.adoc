@@ -1,5 +1,11 @@
 = Versions
 
+== 0.3.0 (2022-04-06)
+
+* Added signature implicit string - Brooke Kuhlmann
+* Updated README introduction - Brooke Kuhlmann
+* Updated analyzer as probe object - Brooke Kuhlmann
+
 == 0.2.0 (2022-03-12)
 
 * Added additional documentation on methods with no parameters - Brooke Kuhlmann

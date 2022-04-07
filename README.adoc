@@ -21,7 +21,6 @@ toc::[]
 
 == Features
 
-* Provides a core object as a primary interface.
 * Provides specialized objects for keyword, positional, and splatted parameters.
 
 == Requirements
@@ -48,14 +47,14 @@ gem "marameters"
 
 There are two main objects you'll want to interact with:
 
-* *Analyzer*: Allows you to analyze a method's parameters.
-* *Signature*: Allows you to dynamically build a method signature.
+* *Marameters::Probe*: Allows you to analyze a method's parameters.
+* *Marameters::Signature*: Allows you to dynamically build a method signature from raw parameters.
 
 Both of these objects are meant to serve as building blocks to more complex architectures.
 
-=== Analyzer
+=== Probe
 
-To understand how to _analyze_ a method's parameters, consider the following demonstration class:
+To understand how to analyze a method's parameters, consider the following demonstration class:
 
 [source,ruby]
 ----
@@ -76,64 +75,64 @@ class Demo
 end
 ----
 
-You can then analyze the `#all` method's parameters as follows:
+You can then probe the `#all` method's parameters as follows:
 
 [source,ruby]
 ----
-analyzer = Marameters::Analyzer.new Demo.instance_method(:all).parameters
+probe = Marameters::Probe.new Demo.instance_method(:all).parameters
 
-analyzer.block                # :seven
-analyzer.block?               # true
-analyzer.empty?               # false
-analyzer.keywords             # [:four, :five]
-analyzer.keywords?            # true
-analyzer.kind?(:keyrest)      # true
-analyzer.kinds                # [:req, :opt, :rest, :keyreq, :key, :keyrest, :block]
-analyzer.name?(:three)        # true
-analyzer.names                # [:one, :two, :three, :four, :five, :six, :seven]
-analyzer.only_bare_splats?    # false
-analyzer.only_double_splats?  # false
-analyzer.only_single_splats?  # false
-analyzer.positionals          # [:one, :two]
-analyzer.positionals?         # true
-analyzer.splats               # [:three, :six]
-analyzer.splats?              # true
-analyzer.to_a                 # [[:req, :one], [:opt, :two], [:rest, :three], [:keyreq, :four], [:key, :five], [:keyrest, :six], [:block, :seven]]
-analyzer.to_h                 # {:req=>:one, :opt=>:two, :rest=>:three, :keyreq=>:four, :key=>:five, :keyrest=>:six, :block=>:seven}
+probe.block                # :seven
+probe.block?               # true
+probe.empty?               # false
+probe.keywords             # [:four, :five]
+probe.keywords?            # true
+probe.kind?(:keyrest)      # true
+probe.kinds                # [:req, :opt, :rest, :keyreq, :key, :keyrest, :block]
+probe.name?(:three)        # true
+probe.names                # [:one, :two, :three, :four, :five, :six, :seven]
+probe.only_bare_splats?    # false
+probe.only_double_splats?  # false
+probe.only_single_splats?  # false
+probe.positionals          # [:one, :two]
+probe.positionals?         # true
+probe.splats               # [:three, :six]
+probe.splats?              # true
+probe.to_a                 # [[:req, :one], [:opt, :two], [:rest, :three], [:keyreq, :four], [:key, :five], [:keyrest, :six], [:block, :seven]]
+probe.to_h                 # {:req=>:one, :opt=>:two, :rest=>:three, :keyreq=>:four, :key=>:five, :keyrest=>:six, :block=>:seven}
 ----
 
-In contrast the above, we can also analyze the `#none` method which has no parameters for a
-completely different result:
+In contrast the above, we can also probe the `#none` method which has no parameters for a completely
+different result:
 
 [source,ruby]
 ----
-analyzer = Marameters::Analyzer.new Demo.instance_method(:none).parameters
+probe = Marameters::Probe.new Demo.instance_method(:none).parameters
 
-analyzer.block                # nil
-analyzer.block?               # false
-analyzer.empty?               # true
-analyzer.keywords             # []
-analyzer.keywords?            # false
-analyzer.kind?(:req)          # true
-analyzer.kinds                # []
-analyzer.name?(:three)        # false
-analyzer.names                # []
-analyzer.only_bare_splats?    # false
-analyzer.only_double_splats?  # false
-analyzer.only_single_splats?  # false
-analyzer.positionals          # []
-analyzer.positionals?         # false
-analyzer.splats               # []
-analyzer.splats?              # false
-analyzer.to_a                 # []
-analyzer.to_h                 # {}
+probe.block                # nil
+probe.block?               # false
+probe.empty?               # true
+probe.keywords             # []
+probe.keywords?            # false
+probe.kind?(:req)          # true
+probe.kinds                # []
+probe.name?(:three)        # false
+probe.names                # []
+probe.only_bare_splats?    # false
+probe.only_double_splats?  # false
+probe.only_single_splats?  # false
+probe.positionals          # []
+probe.positionals?         # false
+probe.splats               # []
+probe.splats?              # false
+probe.to_a                 # []
+probe.to_h                 # {}
 ----
 
 === Signature
 
-The signature class is the opposite of the analyzer in that you want to feed it parameters for
-turning into a method signature. This is useful when dynamically building method signatures or using
-the same signature for multiple methods when metaprogramming.
+The signature class is the opposite of the probe in that you want to feed it parameters for turning
+into a method signature. This is useful when dynamically building method signatures or using the
+same signature when metaprogramming multiple methods.
 
 The following demonstrates how you might construct a method signature with all possible parameters:
 
@@ -155,8 +154,8 @@ puts signature
 # one, two = 2, *three, four:, five: 5, **six, &seven
 ----
 
-You'll notice that the parameters is a hash _and_ some values can be tuples. The reason is that it's
-easier to write a hash than a double nested array as normally produced by the analyzer or directly
+You'll notice that the parameters are a hash _and_ some values can be tuples. The reason is that
+it's easier to write a hash than a double nested array as normally produced by the probe or directly
 from `Method#parameters`. The optional positional and keyword parameters use tuples because you
 might want to supply a default value and this provides a way for you to do that with minimal syntax.
 This can be demonstrated further by using optional keywords (same applies for optional positionals):
@@ -184,15 +183,16 @@ puts Marameters::Signature.new({key: [:demo, "*Object.new"]})
 # demo: Object.new
 ----
 
-In the case of object dependencies you need to wrap these in a string _and_ prefix them with a star
-(`*`) so the signature builder won't confuse these as a normal string. There are two reasons why
-this is important:
+In the case of object dependencies, you need to wrap these in a string _and_ prefix them with a star
+(`*`) so the signature builder won't confuse them as normal strings. There are two reasons why this
+is important:
 
-* The star (`*`) signifies that you want the object to be passed through without any further
-  processing while also not being confused normal strings.
+* The star (`*`) signifies you want an object to be passed through without further processing while
+  also not being confused as a normal string.
 * Objects wrapped as strings allows your dependency to be lazy loaded. Otherwise, if `Object.new`
-  was pass directly, you'd be passing the evaluated instance (i.e. `#<Object:0x0000000107df4028>`)
-  which is not what you want until much later when your method is defined.
+  was pass in directly, you'd be passing the evaluated instance (i.e.
+  `#<Object:0x0000000107df4028>`) which is not what you want until much later when your method is
+  defined.
 
 When you put all of this together, you can dynamically build a method as follows:
 
@@ -202,9 +202,7 @@ signature = Marameters::Signature.new({opt: [:text, "This is a test."]})
 
 Example = Module.new do
   module_eval <<~DEFINITION, __FILE__, __LINE__ + 1
-    def self.say #{signature}
-      text
-    end
+    def self.say(#{signature}) = text
   DEFINITION
 end
 
