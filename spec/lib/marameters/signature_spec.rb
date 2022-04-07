@@ -5,12 +5,12 @@ require "spec_helper"
 RSpec.describe Marameters::Signature do
   subject(:signature) { described_class.new parameters }
 
-  describe "#to_s" do
+  shared_examples "a string" do |method|
     context "with required positional" do
       let(:parameters) { {req: :one} }
 
       it "answers parameter" do
-        expect(signature.to_s).to eq("one")
+        expect(signature.public_send(method)).to eq("one")
       end
     end
 
@@ -18,7 +18,7 @@ RSpec.describe Marameters::Signature do
       let(:parameters) { {opt: [:two, 2]} }
 
       it "answers parameter" do
-        expect(signature.to_s).to eq("two = 2")
+        expect(signature.public_send(method)).to eq("two = 2")
       end
     end
 
@@ -26,7 +26,7 @@ RSpec.describe Marameters::Signature do
       let(:parameters) { {opt: [:two, "two"]} }
 
       it "answers parameter" do
-        expect(signature.to_s).to eq(%(two = "two"))
+        expect(signature.public_send(method)).to eq(%(two = "two"))
       end
     end
 
@@ -34,7 +34,7 @@ RSpec.describe Marameters::Signature do
       let(:parameters) { {opt: %i[two two]} }
 
       it "answers parameter" do
-        expect(signature.to_s).to eq("two = :two")
+        expect(signature.public_send(method)).to eq("two = :two")
       end
     end
 
@@ -42,7 +42,7 @@ RSpec.describe Marameters::Signature do
       let(:parameters) { {opt: [:two, "*Object.new"]} }
 
       it "answers parameter" do
-        expect(signature.to_s).to eq("two = Object.new")
+        expect(signature.public_send(method)).to eq("two = Object.new")
       end
     end
 
@@ -50,7 +50,7 @@ RSpec.describe Marameters::Signature do
       let(:parameters) { {rest: nil} }
 
       it "answers parameter" do
-        expect(signature.to_s).to eq("*")
+        expect(signature.public_send(method)).to eq("*")
       end
     end
 
@@ -58,7 +58,7 @@ RSpec.describe Marameters::Signature do
       let(:parameters) { {rest: :three} }
 
       it "answers parameter" do
-        expect(signature.to_s).to eq("*three")
+        expect(signature.public_send(method)).to eq("*three")
       end
     end
 
@@ -66,7 +66,7 @@ RSpec.describe Marameters::Signature do
       let(:parameters) { {keyreq: :four} }
 
       it "answers parameter" do
-        expect(signature.to_s).to eq("four:")
+        expect(signature.public_send(method)).to eq("four:")
       end
     end
 
@@ -74,7 +74,7 @@ RSpec.describe Marameters::Signature do
       let(:parameters) { {key: [:five, 5]} }
 
       it "answers parameter" do
-        expect(signature.to_s).to eq("five: 5")
+        expect(signature.public_send(method)).to eq("five: 5")
       end
     end
 
@@ -82,7 +82,7 @@ RSpec.describe Marameters::Signature do
       let(:parameters) { {key: [:five, "five"]} }
 
       it "answers parameter" do
-        expect(signature.to_s).to eq(%(five: "five"))
+        expect(signature.public_send(method)).to eq(%(five: "five"))
       end
     end
 
@@ -90,7 +90,7 @@ RSpec.describe Marameters::Signature do
       let(:parameters) { {key: %i[five five]} }
 
       it "answers parameter" do
-        expect(signature.to_s).to eq("five: :five")
+        expect(signature.public_send(method)).to eq("five: :five")
       end
     end
 
@@ -98,7 +98,7 @@ RSpec.describe Marameters::Signature do
       let(:parameters) { {key: [:five, "*Object.new"]} }
 
       it "answers parameter" do
-        expect(signature.to_s).to eq("five: Object.new")
+        expect(signature.public_send(method)).to eq("five: Object.new")
       end
     end
 
@@ -106,7 +106,7 @@ RSpec.describe Marameters::Signature do
       let(:parameters) { {keyrest: nil} }
 
       it "answers parameter" do
-        expect(signature.to_s).to eq("**")
+        expect(signature.public_send(method)).to eq("**")
       end
     end
 
@@ -114,7 +114,7 @@ RSpec.describe Marameters::Signature do
       let(:parameters) { {keyrest: :six} }
 
       it "answers parameter" do
-        expect(signature.to_s).to eq("**six")
+        expect(signature.public_send(method)).to eq("**six")
       end
     end
 
@@ -122,7 +122,7 @@ RSpec.describe Marameters::Signature do
       let(:parameters) { {block: nil} }
 
       it "answers parameter" do
-        expect(signature.to_s).to eq("&")
+        expect(signature.public_send(method)).to eq("&")
       end
     end
 
@@ -130,7 +130,7 @@ RSpec.describe Marameters::Signature do
       let(:parameters) { {block: :seven} }
 
       it "answers parameter" do
-        expect(signature.to_s).to eq("&seven")
+        expect(signature.public_send(method)).to eq("&seven")
       end
     end
 
@@ -148,7 +148,9 @@ RSpec.describe Marameters::Signature do
       end
 
       it "answers parameters" do
-        expect(signature.to_s).to eq("one, two = 2, *three, four:, five: 5, **six, &seven")
+        expect(signature.public_send(method)).to eq(
+          "one, two = 2, *three, four:, five: 5, **six, &seven"
+        )
       end
     end
 
@@ -156,7 +158,7 @@ RSpec.describe Marameters::Signature do
       let(:parameters) { {bogus: :eight} }
 
       it "fails with descriptive message" do
-        expectation = proc { signature.to_s }
+        expectation = proc { signature.public_send method }
 
         expect(&expectation).to raise_error(
           ArgumentError,
@@ -176,5 +178,13 @@ RSpec.describe Marameters::Signature do
 
       expect(mod.demo).to eq(2)
     end
+  end
+
+  describe "#to_s" do
+    it_behaves_like "a string", :to_s
+  end
+
+  describe "#to_str" do
+    it_behaves_like "a string", :to_str
   end
 end

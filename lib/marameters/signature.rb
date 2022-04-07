@@ -10,6 +10,8 @@ module Marameters
 
     def to_s = build.join ", "
 
+    alias to_str to_s
+
     private
 
     attr_reader :parameters, :builder
