@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe Marameters::Analyzer do
+RSpec.describe Marameters::Probe do
   subject(:analyzer) { described_class.new parameters }
 
   include_context "with parameters"

@@ -3,8 +3,8 @@
 require "refinements/arrays"
 
 module Marameters
-  # Provides analysis of a method's parameters.
-  class Analyzer
+  # Provides insight into a method's parameters.
+  class Probe
     using Refinements::Arrays
 
     # :reek:TooManyStatements
