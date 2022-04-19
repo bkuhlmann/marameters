@@ -58,7 +58,7 @@ RSpec.describe Marameters::Probe do
       let(:parameters) { none }
 
       it "answers nil" do
-        expect(analyzer.block).to be_nil
+        expect(analyzer.block).to be(nil)
       end
     end
   end
