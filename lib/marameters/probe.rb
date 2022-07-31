@@ -7,12 +7,8 @@ module Marameters
   class Probe
     using Refinements::Arrays
 
-    # :reek:TooManyStatements
     def self.of klass, name, collection: []
       method = klass.instance_method name
-
-      return collection unless method
-
       collection << new(method.parameters)
       super_method = method.super_method
       of super_method.owner, super_method.name, collection:
