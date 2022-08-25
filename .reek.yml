@@ -6,7 +6,9 @@ detectors:
   NilCheck:
     exclude:
       - "Marameters::Defaulter#call"
-
+  RepeatedConditional:
+    exclude:
+      - "Marameters::Categorizer"
   TooManyMethods:
     exclude:
       - "Marameters::Probe"

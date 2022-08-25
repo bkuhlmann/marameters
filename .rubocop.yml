@@ -5,9 +5,17 @@ Lint/UselessMethodDefinition:
   Exclude:
     - "spec/lib/marameters/*"
 
+Metrics/AbcSize:
+  Exclude:
+    - "lib/marameters/categorizer.rb"
+
 Metrics/CyclomaticComplexity:
   Exclude:
     - "lib/marameters/builder.rb"
+
+Metrics/MethodLength:
+  Exclude:
+    - "lib/marameters/categorizer.rb"
 
 Metrics/ParameterLists:
   Exclude:
