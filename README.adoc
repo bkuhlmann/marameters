@@ -2,30 +2,29 @@
 :toclevels: 5
 :figure-caption!:
 
+:amazing_print_link: link:https://github.com/amazing-print/amazing_print[Amazing Print]
+:article_link: link:https://www.alchemists.io/articles/ruby_method_parameters_and_arguments[method parameters and arguments]
+
 = Marameters
 
-Marameters is a portmanteau (i.e. `[m]ethod + p[arameters] = marameters`) which is designed to
-provide additional insight and diagnostics to method parameters. For context, the difference between
-a method's parameters and arguments is:
+Marameters is a portmanteau (i.e. `[m]ethod + p[arameters] = marameters`) which is designed to provide additional insight and diagnostics for method parameters. For context, the difference between a method's parameters and arguments is:
 
-* *Parameters*: Represents the _expected_ values to be passed to a method when
-  messaged as defined when the method is implemented. Example: `def demo(one, two: nil)`.
-* *Arguments*: Represents the _actual_ values passed to the method when messaged.
-  Example: `demo 1, two: 2`.
+* *Parameters*: Represents the _expected_ values to be passed to a method when messaged as defined when the method is implemented. Example: `def demo one, two: nil`.
+* *Arguments*: Represents the _actual_ values passed to the method when messaged. Example: `demo 1, two: 2`.
 
-This gem will help you debug methods or -- more importantly -- aid your workflow when
-metaprogramming, as used in the link:https://www.alchemists.io/projects/auto_injector[Auto Injector]
-gem, when architecting more sophisticated applications.
+This gem will help you debug methods or aid your workflow when
+metaprogramming -- as used in the link:https://www.alchemists.io/projects/auto_injector[Auto Injector] gem -- when architecting more sophisticated applications.
 
 toc::[]
 
 == Features
 
-* Provides specialized objects for keyword, positional, and splatted parameters.
+* Provides specialized objects for keyword, positional, and block parameters.
 
 == Requirements
 
 . link:https://www.ruby-lang.org[Ruby].
+. A solid understanding of {article_link}.
 
 == Setup
 
@@ -45,16 +44,54 @@ gem "marameters"
 
 == Usage
 
-There are two main objects you'll want to interact with:
+At a high level, you can use `Marameters` as a single object interface for accessing all capabilities provided by this gem. Here's an overview:
 
-* *Marameters::Probe*: Allows you to analyze a method's parameters.
-* *Marameters::Signature*: Allows you to dynamically build a method signature from raw parameters.
+[source,ruby]
+----
+# Setup
+def demo(one, two = 2, three: 3) = puts "One: #{one}, Two: #{two}, Three: #{three}"
 
-Both of these objects are meant to serve as building blocks to more complex architectures.
+parameters = method(:demo).parameters
+arguments = %w[one two]
+
+# Marameters::Categorizer wrapper
+
+Marameters.categorize parameters, arguments
+# #<struct Marameters::Splat positionals=["one", "two"], keywords={}, block=nil>
+
+# Marameters::Probe wrapper
+
+Marameters.of self, :demo            # []
+
+probe = Marameters.probe parameters
+probe.to_h                           # {:req=>:one, :opt=>:two, :key=>:three}
+probe.to_a                           # [[:req, :one], [:opt, :two], [:key, :three]]
+probe.positionals                    # [:one, :two]
+probe.keywords                       # [:three]
+probe.block                          # nil
+
+# Marameters::Signature wrapper
+
+Marameters.signature({req: :one, opt: [:two, 2], key: [:three, 3]})
+# one, two = 2, three: 3
+----
+
+Read on to learn more about the details on how each of these methods work and the objects they wrap.
+
+=== Kinds
+
+Should you need a list of the kinds of parameters supported, you can use the `KINDS` constant. Example:
+
+[source,ruby]
+----
+Marameters::KINDS  # [:req, :opt, :rest, :keyreq, :key, :keyrest, :block]
+----
+
+All keys are listed in order of precedence.
 
 === Probe
 
-To understand how to analyze a method's parameters, consider the following demonstration class:
+The probe allows you to analyze a method's parameters. To understand how, consider the following demonstration class:
 
 [source,ruby]
 ----
@@ -128,11 +165,143 @@ probe.to_a                 # []
 probe.to_h                 # {}
 ----
 
+=== Categorizer
+
+The categorizer allows you to dynamically build positional, keyword, and block arguments for message passing. This is most valuable when you know the object, method, and arguments while also needing to assemble _and validate_ the arguments are in the right order. Here's a demonstration where {amazing_print_link} (i.e. `ap`) is used to format the output:
+
+[source,ruby]
+----
+function = proc { "test" }
+
+module Demo
+  def self.test one, two = nil, *three, four:, five: nil, **six, &seven
+    puts "The .#{__method__} method received the following arguments:\n"
+
+    [one, two, three, four, five, six, seven].each.with_index 1 do |argument, index|
+      puts "#{index}. #{argument.inspect}"
+    end
+
+    puts
+  end
+end
+
+module Inspector
+  def self.call arguments
+    Marameters::Categorizer.new(Demo.method(:test).parameters)
+                           .call(arguments).then do |splat|
+                             ap splat
+                             puts
+                             Demo.test(*splat.positionals, **splat.keywords, &splat.block)
+                           end
+  end
+end
+
+Inspector.call [1, nil, nil, {four: 4}]
+
+# #<Struct:Marameters::Splat:0x00001068
+#  block = nil,
+#  keywords = {
+#    :four => 4
+#  },
+#  positionals = [
+#    1
+#  ]
+# >
+#
+# The .test method received the following arguments:
+# 1. 1
+# 2. nil
+# 3. []
+# 4. 4
+# 5. nil
+# 6. {}
+# 7. nil
+----
+
+When we step through the above implementation and output, we see the following unfold:
+
+. The `Demo` module allows us define a maximum set of parameters and then print the arguments received for inspection purposes.
+. The `Inspector` module provides a wrapper around the `Categorizer` so we can conveniently pass in different arguments for experimentation purposes.
+. We pass in our arguments to `Inspector.call` where `nil` is used for optional arguments and hashes for keyword arguments.
+. Once inside `Inspector.call`, the `Categorizer` is initialized with the `Demo.test` method parameters.
+. Then the `splat` (i.e. Struct) is printed out so you can see the categorized positional, keyword, and block arguments.
+. Finally, `Demo.test` method is called with the splatted arguments.
+
+The above example satisfies the minimum required arguments but if we pass in the maximum arguments -- loosely speaking -- we see more detail:
+
+[source,ruby]
+----
+Inspector.call [1, 2, [98, 99], {four: 4}, {five: 5}, {twenty: 20, thirty: 30}, function]
+
+# Output
+
+#<Struct:Marameters::Splat:0x00001068
+  block = #<Proc:0x000000011b19e300 /snippet:32>,
+  keywords = {
+      :four => 4,
+      :five => 5,
+    :twenty => 20,
+    :thirty => 30
+  },
+  positionals = [
+    1,
+    2,
+    98,
+    99
+  ]
+>
+
+The .test method received the following arguments:
+1. 1
+2. 2
+3. [98, 99]
+4. 4
+5. 5
+6. {:twenty=>20, :thirty=>30}
+7. #<Proc:0x000000011b19e300 /snippet:32>
+----
+
+Once again, it is important to keep in mind that the argument positions _must_ align with the parameter positions since the parameters are an array of elements too. For illustration purposes -- and using the above example -- we can compare the parameters to the arguments as follows:
+
+[source,ruby]
+----
+parameters = Demo.method(:test).parameters
+arguments = [1, 2, [98, 99], {four: 4}, {five: 5}, {twenty: 20, thirty: 30}, function]
+----
+
+With {amazing_print_link}, we can print out this information:
+
+[source,ruby]
+----
+ap parameters
+ap arguments
+----
+
+...which can be further illustrated by this comparison table:
+
+[options="header"]
+|===
+| Parameter         | Argument
+| `%i[reg one]`     | `1`
+| `%i[opt two]`     | `2`
+| `%i[rest three]`  | `[98, 99]`
+| `%i[keyreq four]` | `{four: 4}`
+| `%i[key five]`    | `{five: 5}`
+| `%i[keyrest six]` | `{twenty: 20, thirty: 30}`
+| `%i[block seven]` | `#<Proc:0x0000000108edc778>`
+|===
+
+This also means that:
+
+* All positions much be filled if you want to supply arguments beyond the first couple of positions because everything is positional due to the nature of how link:https://rubyapi.org/o/method#method-i-parameters[Method#parameters] works. Use `nil` to fill an optional argument when you don't need it.
+* The `:rest` (single splat) argument must an array or `nil` if not present because even though it is _optional_, it is still _positional_.
+* The `:keyrest` (double splat) argument -- much like the `:rest` argument -- must be a hash or `nil` if not present.
+
+For further details, please refer back to my {article_link} article mentioned in the _Requirements_ section.
+
 === Signature
 
-The signature class is the opposite of the probe in that you want to feed it parameters for turning
-into a method signature. This is useful when dynamically building method signatures or using the
-same signature when metaprogramming multiple methods.
+The signature class is the inverse of the probe class in that you want to feed it parameters for turning into a method signature. This is useful when dynamically building method signatures or using the same signature when metaprogramming multiple methods.
 
 The following demonstrates how you might construct a method signature with all possible parameters:
 
