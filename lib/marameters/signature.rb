@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Marameters
-  # Produces a method signature for given parameters.
+  # Builds a method's parameter signature.
   class Signature
     def initialize parameters, builder: Builder.new
       @parameters = parameters

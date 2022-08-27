@@ -3,7 +3,7 @@
 require "refinements/arrays"
 
 module Marameters
-  # Provides insight into a method's parameters.
+  # Provides information on a method's parameters.
   class Probe
     using Refinements::Arrays
 

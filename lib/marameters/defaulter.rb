@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Marameters
-  # Calculates the default for a given value when used within a method's parameter.
+  # Computes a method parameter's default value.
   class Defaulter
     PASSTHROUGH = "*"
 
