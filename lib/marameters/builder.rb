@@ -7,7 +7,6 @@ module Marameters
       @defaulter = defaulter
     end
 
-    # :reek:DuplicateMethodCall
     def call kind, name, default: nil
       case kind
         when :req then name

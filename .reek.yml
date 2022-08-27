@@ -3,6 +3,10 @@ exclude_paths:
   - vendor
 
 detectors:
+  DuplicateMethodCall:
+    exclude:
+      - "Marameters::Builder#call"
+      - "Marameters::Categorizer#filter"
   NilCheck:
     exclude:
       - "Marameters::Defaulter#call"
