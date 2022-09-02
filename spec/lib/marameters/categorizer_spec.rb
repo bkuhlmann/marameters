@@ -220,6 +220,36 @@ RSpec.describe Marameters::Categorizer do
       )
     end
 
+    it "answers empty keyword arguments for nokey parameter" do
+      categorizer = Module.new { def trial(**nil) = super }
+                          .instance_method(:trial)
+                          .parameters
+                          .then { |parameters| described_class.new parameters }
+
+      arguments = [{four: 4}]
+
+      expect(categorizer.call(arguments)).to have_attributes(
+        positionals: [],
+        keywords: {},
+        block: nil
+      )
+    end
+
+    it "answers arguments where keywords are empty for nokey parameter" do
+      categorizer = Module.new { def trial(one, **nil, &) = super }
+                          .instance_method(:trial)
+                          .parameters
+                          .then { |parameters| described_class.new parameters }
+
+      arguments = [1, {four: 4}, function]
+
+      expect(categorizer.call(arguments)).to have_attributes(
+        positionals: [1],
+        keywords: {},
+        block: function
+      )
+    end
+
     it "answers block argument for anonymous block parameter" do
       categorizer = Module.new { def trial(&) = super }
                           .instance_method(:trial)

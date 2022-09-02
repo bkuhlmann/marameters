@@ -32,6 +32,7 @@ module Marameters
         in [:keyrest] | [:keyrest, :**] then record.keywords = Hash value
         in [:req, *] | [:opt, *] then record.positionals.append value
         in [:rest, *] then record.positionals.append(*value)
+        in [:nokey] then nil
         in [:keyreq, *] | [:key, *] then record.keywords.merge! value if value
         in [:keyrest, *] then record.keywords.merge!(**value) if value
         in [:block, *] then record.block = value
