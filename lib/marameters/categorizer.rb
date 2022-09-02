@@ -23,16 +23,14 @@ module Marameters
     attr_reader :parameters, :model, :record
 
     def map arguments
-      parameters.each.with_index { |pair, index| filter pair, arguments[index], arguments }
+      parameters.each.with_index { |pair, index| filter pair, arguments[index] }
     end
 
-    def filter pair, value, arguments
+    def filter pair, value
       case pair
-        in [:rest] | [:rest, :*] then splat_positionals arguments
-        in [:keyrest] | [:keyrest, :**] then splat_keywords arguments
-        in [:block, :&] then forward_block arguments
-        in [:req, *] then record.positionals.append value
-        in [:opt, *] then record.positionals.append value if value
+        in [:rest] | [:rest, :*] then splat_positional value
+        in [:keyrest] | [:keyrest, :**] then record.keywords = Hash value
+        in [:req, *] | [:opt, *] then record.positionals.append value
         in [:rest, *] then record.positionals.append(*value)
         in [:keyreq, *] | [:key, *] then record.keywords.merge! value if value
         in [:keyrest, *] then record.keywords.merge!(**value) if value
@@ -43,19 +41,10 @@ module Marameters
       raise TypeError, "#{value.inspect} is an invalid #{pair.first.inspect} value."
     end
 
-    def splat_positionals arguments
-      arguments.reject { |item| item in Hash | Proc }
-               .flatten
-               .then { |values| record.positionals.append(*values) }
-    end
+    def splat_positional value
+      return unless value
 
-    def splat_keywords arguments
-      arguments.each { |value| record.keywords.merge! value if value.is_a? Hash }
-    end
-
-    def forward_block arguments
-      arguments.find { |item| item.is_a? Proc }
-               .then { |block| record.block = block }
+      record.positionals = value.is_a?(Array) ? value : [value]
     end
   end
 end

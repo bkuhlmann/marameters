@@ -11,11 +11,15 @@ RSpec.describe Marameters::Categorizer do
     let(:function) { proc { "test" } }
     let(:maximum) { [1, 2, [98, 99], {four: 4}, {five: 5}, {twenty: 20, thirty: 30}, function] }
 
-    it "answers empty attributes when given empty arguments" do
-      expect(categorizer.call([])).to have_attributes(positionals: [nil], keywords: {}, block: nil)
+    it "answers empty arguments when given empty arguments" do
+      expect(categorizer.call([])).to have_attributes(
+        positionals: [nil, nil],
+        keywords: {},
+        block: nil
+      )
     end
 
-    it "answers empty attributes when no parameters exist for arguments" do
+    it "answers empty arguments when no parameters exist for arguments" do
       categorizer = described_class.new none
 
       expect(categorizer.call([1, 2, 3])).to have_attributes(
@@ -25,7 +29,7 @@ RSpec.describe Marameters::Categorizer do
       )
     end
 
-    it "clears and rebuilds attributes when called multiple times" do
+    it "clears and rebuilds arguments when called multiple times" do
       arguments = [1, 2, nil, {four: 4}]
       categorizer.call arguments
 
@@ -36,60 +40,187 @@ RSpec.describe Marameters::Categorizer do
       )
     end
 
-    it "answers attributes for forwarded arguments" do
-      struct = Struct.new(:a, keyword_init: true) { def self.for(...) = new(...) }
-
-      categorizer = struct.method(:for)
-                          .parameters
-                          .then { |parameters| described_class.new parameters }
-
-      expect(categorizer.call(a: 1)).to have_attributes(
-        positionals: [:a, 1],
-        keywords: {},
-        block: nil
-      )
-    end
-
-    it "answers attributes for splatted/anonymous arguments" do
-      categorizer = Module.new { def trial(*, **, &) = super }
+    it "answers maximum forwarded arguments" do
+      categorizer = Module.new { def trial(...) = super }
                           .instance_method(:trial)
                           .parameters
                           .then { |parameters| described_class.new parameters }
 
-      expect(categorizer.call(maximum)).to have_attributes(
+      arguments = [[1, 2, 98, 99], {four: 4, five: 5, twenty: 20, thirty: 30}, function]
+
+      expect(categorizer.call(arguments)).to have_attributes(
         positionals: [1, 2, 98, 99],
         keywords: {four: 4, five: 5, twenty: 20, thirty: 30},
         block: function
       )
     end
 
-    it "answers attributes for single splats" do
-      categorizer = Module.new { def trial(*) = super }
+    it "answers only forwarded positional arguments" do
+      categorizer = Module.new { def trial(...) = super }
                           .instance_method(:trial)
                           .parameters
                           .then { |parameters| described_class.new parameters }
 
-      expect(categorizer.call(maximum)).to have_attributes(
+      arguments = [[1, 2, 98, 99]]
+
+      expect(categorizer.call(arguments)).to have_attributes(
         positionals: [1, 2, 98, 99],
         keywords: {},
         block: nil
       )
     end
 
-    it "answers attributes for double splats" do
+    it "answers only forwarded keyword arguments" do
+      categorizer = Module.new { def trial(...) = super }
+                          .instance_method(:trial)
+                          .parameters
+                          .then { |parameters| described_class.new parameters }
+
+      arguments = [nil, {four: 4, five: 5, twenty: 20}]
+
+      expect(categorizer.call(arguments)).to have_attributes(
+        positionals: [],
+        keywords: {four: 4, five: 5, twenty: 20},
+        block: nil
+      )
+    end
+
+    it "answers only forwarded block argument" do
+      categorizer = Module.new { def trial(...) = super }
+                          .instance_method(:trial)
+                          .parameters
+                          .then { |parameters| described_class.new parameters }
+
+      arguments = [nil, nil, function]
+
+      expect(categorizer.call(arguments)).to have_attributes(
+        positionals: [],
+        keywords: {},
+        block: function
+      )
+    end
+
+    it "answers maximum bare splatted arguments" do
+      categorizer = Module.new { def trial(*, **, &) = super }
+                          .instance_method(:trial)
+                          .parameters
+                          .then { |parameters| described_class.new parameters }
+
+      arguments = [[1, 2, 98, 99], {four: 4, five: 5, twenty: 20}, function]
+
+      expect(categorizer.call(arguments)).to have_attributes(
+        positionals: [1, 2, 98, 99],
+        keywords: {four: 4, five: 5, twenty: 20},
+        block: function
+      )
+    end
+
+    it "answers only bare splatted positional arguments" do
+      categorizer = Module.new { def trial(*, **, &) = super }
+                          .instance_method(:trial)
+                          .parameters
+                          .then { |parameters| described_class.new parameters }
+
+      arguments = [[1, 2, 98, 99]]
+
+      expect(categorizer.call(arguments)).to have_attributes(
+        positionals: [1, 2, 98, 99],
+        keywords: {},
+        block: function
+      )
+    end
+
+    it "answers only bare splatted keyword arguments" do
+      categorizer = Module.new { def trial(*, **, &) = super }
+                          .instance_method(:trial)
+                          .parameters
+                          .then { |parameters| described_class.new parameters }
+
+      arguments = [nil, {four: 4, five: 5, twenty: 20}]
+
+      expect(categorizer.call(arguments)).to have_attributes(
+        positionals: [],
+        keywords: {four: 4, five: 5, twenty: 20},
+        block: function
+      )
+    end
+
+    it "answers maximum name splatted arguments" do
+      categorizer = Module.new { def trial(*one, **two, &block) = super one, two, yield(block) }
+                          .instance_method(:trial)
+                          .parameters
+                          .then { |parameters| described_class.new parameters }
+
+      arguments = [[1, 2, 98, 99], {four: 4, five: 5, twenty: 20}, function]
+
+      expect(categorizer.call(arguments)).to have_attributes(
+        positionals: [1, 2, 98, 99],
+        keywords: {four: 4, five: 5, twenty: 20},
+        block: function
+      )
+    end
+
+    it "answers only name splatted positional arguments" do
+      categorizer = Module.new { def trial(*one, **two, &block) = super one, two, yield(block) }
+                          .instance_method(:trial)
+                          .parameters
+                          .then { |parameters| described_class.new parameters }
+
+      arguments = [[1, 2, 98, 99]]
+
+      expect(categorizer.call(arguments)).to have_attributes(
+        positionals: [1, 2, 98, 99],
+        keywords: {},
+        block: nil
+      )
+    end
+
+    it "answers only name splatted keyword arguments" do
+      categorizer = Module.new { def trial(*one, **two, &block) = super one, two, yield(block) }
+                          .instance_method(:trial)
+                          .parameters
+                          .then { |parameters| described_class.new parameters }
+
+      arguments = [nil, {four: 4, five: 5, twenty: 20}]
+
+      expect(categorizer.call(arguments)).to have_attributes(
+        positionals: [],
+        keywords: {four: 4, five: 5, twenty: 20},
+        block: nil
+      )
+    end
+
+    it "answers hash argument for single splat parameter" do
+      categorizer = Module.new { def trial(*) = super }
+                          .instance_method(:trial)
+                          .parameters
+                          .then { |parameters| described_class.new parameters }
+
+      arguments = [{a: 1}]
+
+      expect(categorizer.call(arguments)).to have_attributes(
+        positionals: [{a: 1}],
+        keywords: {},
+        block: nil
+      )
+    end
+
+    it "answers hash argument for bare double splat parameter" do
       categorizer = Module.new { def trial(**) = super }
                           .instance_method(:trial)
                           .parameters
                           .then { |parameters| described_class.new parameters }
 
-      expect(categorizer.call(maximum)).to have_attributes(
+      arguments = [{four: 4}]
+
+      expect(categorizer.call(arguments)).to have_attributes(
         positionals: [],
-        keywords: {four: 4, five: 5, twenty: 20, thirty: 30},
+        keywords: {four: 4},
         block: nil
       )
     end
 
-    it "answers attributes for anonymous block" do
+    it "answers block argument for anonymous block parameter" do
       categorizer = Module.new { def trial(&) = super }
                           .instance_method(:trial)
                           .parameters
@@ -102,7 +233,20 @@ RSpec.describe Marameters::Categorizer do
       )
     end
 
-    it "answers minimum attributes" do
+    it "answers block argument for named block parameter" do
+      categorizer = Module.new { def trial(&block) = super yield(block) }
+                          .instance_method(:trial)
+                          .parameters
+                          .then { |parameters| described_class.new parameters }
+
+      expect(categorizer.call(maximum)).to have_attributes(
+        positionals: [],
+        keywords: {},
+        block: function
+      )
+    end
+
+    it "answers minimum arguments" do
       expect(categorizer.call([1, 2, nil, {four: 4}])).to have_attributes(
         positionals: [1, 2],
         keywords: {four: 4},
@@ -110,44 +254,31 @@ RSpec.describe Marameters::Categorizer do
       )
     end
 
-    it "answers with minimum attributes filled for using last position" do
+    it "answers minimum arguments with nils filled to last position" do
       arguments = [nil, nil, nil, {four: 4}, nil, nil, function]
 
       expect(categorizer.call(arguments)).to have_attributes(
-        positionals: [nil],
+        positionals: [nil, nil],
         keywords: {four: 4},
         block: function
       )
     end
 
-    it "answers with minimum but required attributes filled for using last position" do
+    it "answers minimum arguments when requirements are filled to last position" do
       arguments = [:a, nil, nil, {four: 4}, nil, nil, function]
 
       expect(categorizer.call(arguments)).to have_attributes(
-        positionals: [:a],
+        positionals: [:a, nil],
         keywords: {four: 4},
         block: function
       )
     end
 
-    it "answers maximum attributes" do
-      arguments = [1, 2, [98, 99], {four: 4}, {five: 5}, {twenty: 20, thirty: 30}, function]
-
-      expect(categorizer.call(arguments)).to have_attributes(
+    it "answers maximum arguments" do
+      expect(categorizer.call(maximum)).to have_attributes(
         positionals: [1, 2, 98, 99],
         keywords: {four: 4, five: 5, twenty: 20, thirty: 30},
         block: function
-      )
-    end
-
-    it "answers attributes for struct" do
-      struct = Struct.new :a, :b, keyword_init: true
-      categorizer = described_class.new struct.method(:new).parameters
-
-      expect(categorizer.call(a: 1)).to have_attributes(
-        positionals: [:a, 1],
-        keywords: {},
-        block: nil
       )
     end
 
@@ -159,7 +290,7 @@ RSpec.describe Marameters::Categorizer do
     end
 
     it "fails with invalid keyword argument" do
-      expectation = proc { categorizer.call [1, 2, 3, "test", {a: 1}] }
+      expectation = proc { categorizer.call [1, 2, 3, "test"] }
       expect(&expectation).to raise_error(TypeError, %("test" is an invalid :keyreq value.))
     end
   end
