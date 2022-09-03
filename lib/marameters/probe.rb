@@ -7,6 +7,12 @@ module Marameters
   class Probe
     using Refinements::Arrays
 
+    CATEGORIES = {
+      positionals: %i[req opt],
+      keywords: %i[keyreq key],
+      splats: %i[rest keyrest]
+    }.freeze
+
     def self.of klass, name, collection: []
       method = klass.instance_method name
       collection << new(method.parameters)
@@ -16,32 +22,32 @@ module Marameters
       collection
     end
 
-    def initialize parameters
+    attr_reader :keywords, :positionals, :splats
+
+    def initialize parameters, categories: CATEGORIES
       @parameters = parameters
-      @items = parameters.reduce({}) { |all, (kind, name)| all.merge kind => name }
+      categories.each { |category, kinds| define_variable category, kinds }
     end
 
-    def block = items[:block]
+    def block = parameters.find { |kind, name| break name if kind == :block }
 
-    def block? = items.key? :block
+    def block? = (parameters in [*, [:block, *]])
 
-    def empty? = items.empty?
+    def empty? = parameters.empty?
 
     def keyword_slice collection, keys:
       collection.select { |key| !keys.include?(key) || keywords.include?(key) }
     end
 
-    def keywords = items.values_at(:keyreq, :key).compress!
-
     def keywords? = keywords.any?
 
-    def kind?(kind) = items.key? kind
+    def kind?(value) = parameters.any? { |kind, _name| kind == value }
 
-    def kinds = items.keys
+    def kinds = parameters.map { |kind, _name| kind }
 
-    def name?(name) = items.value? name
+    def name?(value) = parameters.any? { |_kind, name| name == value }
 
-    def names = items.values
+    def names = parameters.map { |_kind, name| name }
 
     def only_bare_splats? = (parameters in [[:rest]] | [[:keyrest]] | [[:rest], [:keyrest]])
 
@@ -49,20 +55,21 @@ module Marameters
 
     def only_single_splats? = (parameters in [[:rest, *]])
 
-    def positionals = items.values_at(:req, :opt).compress!
-
     def positionals? = positionals.any?
-
-    def splats = items.values_at(:rest, :keyrest).compress!
 
     def splats? = splats.any?
 
     def to_a = parameters
 
-    def to_h = items
+    def to_h = parameters.reduce({}) { |all, (kind, name)| all.merge kind => name }
 
     private
 
-    attr_reader :parameters, :items
+    attr_reader :parameters
+
+    def define_variable category, kinds
+      parameters.filter_map { |kind, name| next name if kinds.include? kind }
+                .then { |collection| instance_variable_set "@#{category}", collection }
+    end
   end
 end
