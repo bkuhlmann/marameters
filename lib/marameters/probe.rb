@@ -61,8 +61,6 @@ module Marameters
 
     def to_a = parameters
 
-    def to_h = parameters.reduce({}) { |all, (kind, name)| all.merge kind => name }
-
     private
 
     attr_reader :parameters
