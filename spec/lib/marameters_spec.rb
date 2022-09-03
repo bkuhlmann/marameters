@@ -29,14 +29,16 @@ RSpec.describe Marameters do
 
   describe ".probe" do
     it "answers parameter details" do
-      expect(marameters.probe(comprehensive).to_h).to eq(
-        block: :seven,
-        key: :five,
-        keyreq: :four,
-        keyrest: :six,
-        opt: :two,
-        req: :one,
-        rest: :three
+      expect(marameters.probe(comprehensive).to_a).to eq(
+        [
+          %i[req one],
+          %i[opt two],
+          %i[rest three],
+          %i[keyreq four],
+          %i[key five],
+          %i[keyrest six],
+          %i[block seven]
+        ]
       )
     end
   end
