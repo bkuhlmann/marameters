@@ -1,12 +1,8 @@
 # frozen_string_literal: true
 
-require "refinements/arrays"
-
 module Marameters
   # Provides information on a method's parameters.
   class Probe
-    using Refinements::Arrays
-
     CATEGORIES = {
       positionals: %i[req opt],
       keywords: %i[keyreq key],
