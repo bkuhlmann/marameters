@@ -78,17 +78,6 @@ Marameters.signature({req: :one, opt: [:two, 2], key: [:three, 3]})
 
 Read on to learn more about the details on how each of these methods work and the objects they wrap.
 
-=== Kinds
-
-Should you need a list of the kinds of parameters supported, you can use the `KINDS` constant. Example:
-
-[source,ruby]
-----
-Marameters::KINDS  # [:req, :opt, :rest, :keyreq, :key, :keyrest, :block]
-----
-
-All keys are listed in order of precedence.
-
 === Probe
 
 The probe allows you to analyze a method's parameters. To understand how, consider the following demonstration class:
