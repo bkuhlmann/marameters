@@ -3,7 +3,7 @@
 require "spec_helper"
 
 RSpec.describe Marameters::Probe do
-  subject(:analyzer) { described_class.new parameters }
+  subject(:probe) { described_class.new parameters }
 
   include_context "with parameters"
 
@@ -42,7 +42,7 @@ RSpec.describe Marameters::Probe do
       end
 
       it "answers ampersand" do
-        expect(analyzer.block).to eq(:&)
+        expect(probe.block).to eq(:&)
       end
     end
 
@@ -50,7 +50,7 @@ RSpec.describe Marameters::Probe do
       let(:parameters) { comprehensive }
 
       it "answers name" do
-        expect(analyzer.block).to eq(:seven)
+        expect(probe.block).to eq(:seven)
       end
     end
 
@@ -58,7 +58,7 @@ RSpec.describe Marameters::Probe do
       let(:parameters) { none }
 
       it "answers nil" do
-        expect(analyzer.block).to be(nil)
+        expect(probe.block).to be(nil)
       end
     end
   end
@@ -68,7 +68,7 @@ RSpec.describe Marameters::Probe do
       let(:parameters) { comprehensive }
 
       it "answers true" do
-        expect(analyzer.block?).to be(true)
+        expect(probe.block?).to be(true)
       end
     end
 
@@ -76,7 +76,7 @@ RSpec.describe Marameters::Probe do
       let(:parameters) { none }
 
       it "answers false" do
-        expect(analyzer.block?).to be(false)
+        expect(probe.block?).to be(false)
       end
     end
   end
@@ -86,7 +86,7 @@ RSpec.describe Marameters::Probe do
       let(:parameters) { comprehensive }
 
       it "answers false" do
-        expect(analyzer.empty?).to be(false)
+        expect(probe.empty?).to be(false)
       end
     end
 
@@ -94,7 +94,7 @@ RSpec.describe Marameters::Probe do
       let(:parameters) { none }
 
       it "answers false" do
-        expect(analyzer.empty?).to be(true)
+        expect(probe.empty?).to be(true)
       end
     end
   end
@@ -103,17 +103,17 @@ RSpec.describe Marameters::Probe do
     let(:parameters) { comprehensive }
 
     it "answers method arguments and excludes non-method arguments" do
-      expectation = analyzer.keyword_slice({a: 1, four: 4}, keys: [:a])
+      expectation = probe.keyword_slice({a: 1, four: 4}, keys: [:a])
       expect(expectation).to eq({four: 4})
     end
 
     it "answers originals pairs when keys don't match" do
-      expectation = analyzer.keyword_slice({a: 1, b: 2}, keys: %i[x z])
+      expectation = probe.keyword_slice({a: 1, b: 2}, keys: %i[x z])
       expect(expectation).to eq(a: 1, b: 2)
     end
 
     it "answers original pairs when keys match method arguments" do
-      expectation = analyzer.keyword_slice({a: 1, four: 4}, keys: [:four])
+      expectation = probe.keyword_slice({a: 1, four: 4}, keys: [:four])
       expect(expectation).to eq({a: 1, four: 4})
     end
   end
@@ -123,7 +123,7 @@ RSpec.describe Marameters::Probe do
       let(:parameters) { comprehensive }
 
       it "answers array of names" do
-        expect(analyzer.keywords).to eq(%i[four five])
+        expect(probe.keywords).to eq(%i[four five])
       end
     end
 
@@ -131,7 +131,7 @@ RSpec.describe Marameters::Probe do
       let(:parameters) { none }
 
       it "answers empty array" do
-        expect(analyzer.keywords).to eq([])
+        expect(probe.keywords).to eq([])
       end
     end
   end
@@ -141,7 +141,7 @@ RSpec.describe Marameters::Probe do
       let(:parameters) { comprehensive }
 
       it "answers true" do
-        expect(analyzer.keywords?).to be(true)
+        expect(probe.keywords?).to be(true)
       end
     end
 
@@ -149,7 +149,7 @@ RSpec.describe Marameters::Probe do
       let(:parameters) { none }
 
       it "answers false" do
-        expect(analyzer.keywords?).to be(false)
+        expect(probe.keywords?).to be(false)
       end
     end
   end
@@ -159,11 +159,11 @@ RSpec.describe Marameters::Probe do
       let(:parameters) { comprehensive }
 
       it "answers true with match" do
-        expect(analyzer.kind?(:req)).to be(true)
+        expect(probe.kind?(:req)).to be(true)
       end
 
       it "answers false without match" do
-        expect(analyzer.kind?(:unknown)).to be(false)
+        expect(probe.kind?(:unknown)).to be(false)
       end
     end
 
@@ -171,7 +171,7 @@ RSpec.describe Marameters::Probe do
       let(:parameters) { none }
 
       it "answers false" do
-        expect(analyzer.kind?(:unknown)).to be(false)
+        expect(probe.kind?(:unknown)).to be(false)
       end
     end
   end
@@ -181,7 +181,7 @@ RSpec.describe Marameters::Probe do
       let(:parameters) { comprehensive }
 
       it "answers kinds" do
-        expect(analyzer.kinds).to eq(%i[req opt rest keyreq key keyrest block])
+        expect(probe.kinds).to eq(%i[req opt rest keyreq key keyrest block])
       end
     end
 
@@ -189,7 +189,7 @@ RSpec.describe Marameters::Probe do
       let(:parameters) { none }
 
       it "answers empty array" do
-        expect(analyzer.kinds).to be_empty
+        expect(probe.kinds).to be_empty
       end
     end
   end
@@ -199,11 +199,11 @@ RSpec.describe Marameters::Probe do
       let(:parameters) { comprehensive }
 
       it "answers true with match" do
-        expect(analyzer.name?(:one)).to be(true)
+        expect(probe.name?(:one)).to be(true)
       end
 
       it "answers false without match" do
-        expect(analyzer.name?(:unknown)).to be(false)
+        expect(probe.name?(:unknown)).to be(false)
       end
     end
 
@@ -211,7 +211,7 @@ RSpec.describe Marameters::Probe do
       let(:parameters) { none }
 
       it "answers false" do
-        expect(analyzer.name?(:unknown)).to be(false)
+        expect(probe.name?(:unknown)).to be(false)
       end
     end
   end
@@ -221,7 +221,7 @@ RSpec.describe Marameters::Probe do
       let(:parameters) { comprehensive }
 
       it "answers names" do
-        expect(analyzer.names).to eq(%i[one two three four five six seven])
+        expect(probe.names).to eq(%i[one two three four five six seven])
       end
     end
 
@@ -229,7 +229,7 @@ RSpec.describe Marameters::Probe do
       let(:parameters) { none }
 
       it "answers empty array" do
-        expect(analyzer.names).to eq([])
+        expect(probe.names).to eq([])
       end
     end
   end
@@ -243,7 +243,7 @@ RSpec.describe Marameters::Probe do
       end
 
       it "answers true" do
-        expect(analyzer.only_bare_splats?).to be(true)
+        expect(probe.only_bare_splats?).to be(true)
       end
     end
 
@@ -255,7 +255,7 @@ RSpec.describe Marameters::Probe do
       end
 
       it "answers false" do
-        expect(analyzer.only_bare_splats?).to be(false)
+        expect(probe.only_bare_splats?).to be(false)
       end
     end
 
@@ -267,7 +267,7 @@ RSpec.describe Marameters::Probe do
       end
 
       it "answers true" do
-        expect(analyzer.only_bare_splats?).to be(true)
+        expect(probe.only_bare_splats?).to be(true)
       end
     end
 
@@ -279,7 +279,7 @@ RSpec.describe Marameters::Probe do
       end
 
       it "answers false" do
-        expect(analyzer.only_bare_splats?).to be(false)
+        expect(probe.only_bare_splats?).to be(false)
       end
     end
 
@@ -291,7 +291,7 @@ RSpec.describe Marameters::Probe do
       end
 
       it "answers true" do
-        expect(analyzer.only_bare_splats?).to be(true)
+        expect(probe.only_bare_splats?).to be(true)
       end
     end
 
@@ -303,7 +303,7 @@ RSpec.describe Marameters::Probe do
       end
 
       it "answers false" do
-        expect(analyzer.only_bare_splats?).to be(false)
+        expect(probe.only_bare_splats?).to be(false)
       end
     end
 
@@ -311,7 +311,7 @@ RSpec.describe Marameters::Probe do
       let(:parameters) { none }
 
       it "answers false" do
-        expect(analyzer.only_bare_splats?).to be(false)
+        expect(probe.only_bare_splats?).to be(false)
       end
     end
   end
@@ -325,7 +325,7 @@ RSpec.describe Marameters::Probe do
       end
 
       it "answers false" do
-        expect(analyzer.only_double_splats?).to be(false)
+        expect(probe.only_double_splats?).to be(false)
       end
     end
 
@@ -337,7 +337,7 @@ RSpec.describe Marameters::Probe do
       end
 
       it "answers false" do
-        expect(analyzer.only_double_splats?).to be(false)
+        expect(probe.only_double_splats?).to be(false)
       end
     end
 
@@ -349,7 +349,7 @@ RSpec.describe Marameters::Probe do
       end
 
       it "answers true" do
-        expect(analyzer.only_double_splats?).to be(true)
+        expect(probe.only_double_splats?).to be(true)
       end
     end
 
@@ -361,7 +361,7 @@ RSpec.describe Marameters::Probe do
       end
 
       it "answers true" do
-        expect(analyzer.only_double_splats?).to be(true)
+        expect(probe.only_double_splats?).to be(true)
       end
     end
 
@@ -373,7 +373,7 @@ RSpec.describe Marameters::Probe do
       end
 
       it "answers false" do
-        expect(analyzer.only_double_splats?).to be(false)
+        expect(probe.only_double_splats?).to be(false)
       end
     end
 
@@ -385,7 +385,7 @@ RSpec.describe Marameters::Probe do
       end
 
       it "answers false" do
-        expect(analyzer.only_double_splats?).to be(false)
+        expect(probe.only_double_splats?).to be(false)
       end
     end
 
@@ -393,7 +393,7 @@ RSpec.describe Marameters::Probe do
       let(:parameters) { none }
 
       it "answers false" do
-        expect(analyzer.only_double_splats?).to be(false)
+        expect(probe.only_double_splats?).to be(false)
       end
     end
   end
@@ -407,7 +407,7 @@ RSpec.describe Marameters::Probe do
       end
 
       it "answers true" do
-        expect(analyzer.only_single_splats?).to be(true)
+        expect(probe.only_single_splats?).to be(true)
       end
     end
 
@@ -419,7 +419,7 @@ RSpec.describe Marameters::Probe do
       end
 
       it "answers true" do
-        expect(analyzer.only_single_splats?).to be(true)
+        expect(probe.only_single_splats?).to be(true)
       end
     end
 
@@ -431,7 +431,7 @@ RSpec.describe Marameters::Probe do
       end
 
       it "answers false" do
-        expect(analyzer.only_single_splats?).to be(false)
+        expect(probe.only_single_splats?).to be(false)
       end
     end
 
@@ -443,7 +443,7 @@ RSpec.describe Marameters::Probe do
       end
 
       it "answers false" do
-        expect(analyzer.only_single_splats?).to be(false)
+        expect(probe.only_single_splats?).to be(false)
       end
     end
 
@@ -455,7 +455,7 @@ RSpec.describe Marameters::Probe do
       end
 
       it "answers false" do
-        expect(analyzer.only_single_splats?).to be(false)
+        expect(probe.only_single_splats?).to be(false)
       end
     end
 
@@ -467,7 +467,7 @@ RSpec.describe Marameters::Probe do
       end
 
       it "answers false" do
-        expect(analyzer.only_single_splats?).to be(false)
+        expect(probe.only_single_splats?).to be(false)
       end
     end
 
@@ -475,7 +475,7 @@ RSpec.describe Marameters::Probe do
       let(:parameters) { none }
 
       it "answers false" do
-        expect(analyzer.only_single_splats?).to be(false)
+        expect(probe.only_single_splats?).to be(false)
       end
     end
   end
@@ -485,7 +485,7 @@ RSpec.describe Marameters::Probe do
       let(:parameters) { comprehensive }
 
       it "answers array of names" do
-        expect(analyzer.positionals).to eq(%i[one two])
+        expect(probe.positionals).to eq(%i[one two])
       end
     end
 
@@ -493,7 +493,7 @@ RSpec.describe Marameters::Probe do
       let(:parameters) { none }
 
       it "answers empty array" do
-        expect(analyzer.positionals).to eq([])
+        expect(probe.positionals).to eq([])
       end
     end
   end
@@ -503,7 +503,7 @@ RSpec.describe Marameters::Probe do
       let(:parameters) { comprehensive }
 
       it "answers true" do
-        expect(analyzer.positionals?).to be(true)
+        expect(probe.positionals?).to be(true)
       end
     end
 
@@ -511,7 +511,7 @@ RSpec.describe Marameters::Probe do
       let(:parameters) { none }
 
       it "answers false" do
-        expect(analyzer.positionals?).to be(false)
+        expect(probe.positionals?).to be(false)
       end
     end
   end
@@ -525,7 +525,7 @@ RSpec.describe Marameters::Probe do
       end
 
       it "answers empty array" do
-        expect(analyzer.splats).to eq([])
+        expect(probe.splats).to eq([])
       end
     end
 
@@ -533,7 +533,7 @@ RSpec.describe Marameters::Probe do
       let(:parameters) { comprehensive }
 
       it "answers array of names" do
-        expect(analyzer.splats).to eq(%i[three six])
+        expect(probe.splats).to eq(%i[three six])
       end
     end
 
@@ -541,7 +541,7 @@ RSpec.describe Marameters::Probe do
       let(:parameters) { none }
 
       it "answers empty array" do
-        expect(analyzer.splats).to eq([])
+        expect(probe.splats).to eq([])
       end
     end
   end
@@ -551,7 +551,7 @@ RSpec.describe Marameters::Probe do
       let(:parameters) { comprehensive }
 
       it "answers true" do
-        expect(analyzer.splats?).to be(true)
+        expect(probe.splats?).to be(true)
       end
     end
 
@@ -559,7 +559,7 @@ RSpec.describe Marameters::Probe do
       let(:parameters) { none }
 
       it "answers false" do
-        expect(analyzer.splats?).to be(false)
+        expect(probe.splats?).to be(false)
       end
     end
   end
@@ -569,7 +569,7 @@ RSpec.describe Marameters::Probe do
       let(:parameters) { comprehensive }
 
       it "answers array" do
-        expect(analyzer.to_a).to eq(comprehensive_proof)
+        expect(probe.to_a).to eq(comprehensive_proof)
       end
     end
 
@@ -577,7 +577,7 @@ RSpec.describe Marameters::Probe do
       let(:parameters) { none }
 
       it "answers empty array" do
-        expect(analyzer.to_a).to eq([])
+        expect(probe.to_a).to eq([])
       end
     end
   end
