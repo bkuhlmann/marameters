@@ -1,5 +1,14 @@
 = Versions
 
+== 0.8.0 (2022-09-03)
+
+* Fixed categorizer forwarded and bare splat argument handling - Brooke Kuhlmann
+* Fixed probe spec subject name - Brooke Kuhlmann
+* Added categorizer nokey parameter - Brooke Kuhlmann
+* Removed Probe hash conversion - Brooke Kuhlmann
+* Removed kinds constant - Brooke Kuhlmann
+* Refactored probe to use parameter array instead of hash - Brooke Kuhlmann
+
 == 0.7.0 (2022-09-01)
 
 * Fixed Reek DuplicateMethodCall issues - Brooke Kuhlmann

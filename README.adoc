@@ -71,7 +71,7 @@ probe.block                          # nil
 
 # Marameters::Signature wrapper
 
-Marameters.signature({req: :one, opt: [:two, 2], key: [:three, 3]})
+Marameters.signature({req: :one, opt: [:two, 2], key: [:three, 3]}).to_s
 # one, two = 2, three: 3
 ----
 
@@ -153,7 +153,7 @@ probe.to_a                 # []
 
 === Categorizer
 
-The categorizer allows you to dynamically build positional, keyword, and block arguments for message passing. This is most valuable when you know the object, method, and arguments while also needing to assemble _and validate_ the arguments are in the right order. Here's a demonstration where {amazing_print_link} (i.e. `ap`) is used to format the output:
+The categorizer allows you to dynamically build positional, keyword, and block arguments for message passing. This is most valuable when you know the object, method, and arguments while also needing to assemble the arguments are in the right order. Here's a demonstration where {amazing_print_link} (i.e. `ap`) is used to format the output:
 
 [source,ruby]
 ----
@@ -184,14 +184,15 @@ end
 
 Inspector.call [1, nil, nil, {four: 4}]
 
-# #<Struct:Marameters::Splat:0x00001068
-#  block = nil,
-#  keywords = {
-#    :four => 4
-#  },
-#  positionals = [
-#    1
-#  ]
+# #<Struct:Marameters::Splat:0x00021930
+#   block = nil,
+#   keywords = {
+#     :four => 4
+#   },
+#   positionals = [
+#     1,
+#     nil
+#   ]
 # >
 #
 # The .test method received the following arguments:
@@ -221,30 +222,30 @@ Inspector.call [1, 2, [98, 99], {four: 4}, {five: 5}, {twenty: 20, thirty: 30}, 
 
 # Output
 
-#<Struct:Marameters::Splat:0x00001068
-  block = #<Proc:0x000000011b19e300 /snippet:32>,
-  keywords = {
-      :four => 4,
-      :five => 5,
-    :twenty => 20,
-    :thirty => 30
-  },
-  positionals = [
-    1,
-    2,
-    98,
-    99
-  ]
->
-
-The .test method received the following arguments:
-1. 1
-2. 2
-3. [98, 99]
-4. 4
-5. 5
-6. {:twenty=>20, :thirty=>30}
-7. #<Proc:0x000000011b19e300 /snippet:32>
+# #<Struct:Marameters::Splat:0x00029cc0
+#   block = #<Proc:0x000000010a88cec0 (irb):1>,
+#   keywords = {
+#       :four => 4,
+#       :five => 5,
+#     :twenty => 20,
+#     :thirty => 30
+#   },
+#   positionals = [
+#     1,
+#     2,
+#     98,
+#     99
+#   ]
+# >
+#
+# The .test method received the following arguments:
+# 1. 1
+# 2. 2
+# 3. [98, 99]
+# 4. 4
+# 5. 5
+# 6. {:twenty=>20, :thirty=>30}
+# 7. #<Proc:0x000000010a88cec0 (irb):1>
 ----
 
 Once again, it is important to keep in mind that the argument positions _must_ align with the parameter positions since the parameters are an array of elements too. For illustration purposes -- and using the above example -- we can compare the parameters to the arguments as follows:
