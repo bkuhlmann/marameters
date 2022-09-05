@@ -13,7 +13,7 @@ Marameters is a portmanteau (i.e. `[m]ethod + p[arameters] = marameters`) which 
 * *Arguments*: Represents the _actual_ values passed to the method when messaged. Example: `demo 1, two: 2`.
 
 This gem will help you debug methods or aid your workflow when
-metaprogramming -- as used in the link:https://www.alchemists.io/projects/auto_injector[Auto Injector] gem -- when architecting more sophisticated applications.
+metaprogramming -- as used in the link:https://www.alchemists.io/projects/infusible[Infusible] gem -- when architecting more sophisticated applications.
 
 toc::[]
 
