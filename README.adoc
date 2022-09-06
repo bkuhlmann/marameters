@@ -153,7 +153,7 @@ probe.to_a                 # []
 
 === Categorizer
 
-The categorizer allows you to dynamically build positional, keyword, and block arguments for message passing. This is most valuable when you know the object, method, and arguments while also needing to assemble the arguments are in the right order. Here's a demonstration where {amazing_print_link} (i.e. `ap`) is used to format the output:
+The categorizer allows you to dynamically build positional, keyword, and block arguments for message passing. This is most valuable when you know the object and method while needing to align the arguments in the right order. Here's a demonstration where {amazing_print_link} (i.e. `ap`) is used to format the output:
 
 [source,ruby]
 ----
@@ -207,7 +207,7 @@ Inspector.call [1, nil, nil, {four: 4}]
 
 When we step through the above implementation and output, we see the following unfold:
 
-. The `Demo` module allows us define a maximum set of parameters and then print the arguments received for inspection purposes.
+. The `Demo` module allows us to define a maximum set of parameters and then print the arguments received for inspection purposes.
 . The `Inspector` module provides a wrapper around the `Categorizer` so we can conveniently pass in different arguments for experimentation purposes.
 . We pass in our arguments to `Inspector.call` where `nil` is used for optional arguments and hashes for keyword arguments.
 . Once inside `Inspector.call`, the `Categorizer` is initialized with the `Demo.test` method parameters.
@@ -248,7 +248,7 @@ Inspector.call [1, 2, [98, 99], {four: 4}, {five: 5}, {twenty: 20, thirty: 30}, 
 # 7. #<Proc:0x000000010a88cec0 (irb):1>
 ----
 
-Once again, it is important to keep in mind that the argument positions _must_ align with the parameter positions since the parameters are an array of elements too. For illustration purposes -- and using the above example -- we can compare the parameters to the arguments as follows:
+Once again, it is important to keep in mind that the argument positions _must_ align with the parameter positions since the parameters are an array of elements too. For illustration purposes -- using the above example -- we can compare the parameters to the arguments as follows:
 
 [source,ruby]
 ----
@@ -280,9 +280,21 @@ ap arguments
 
 This also means that:
 
-* All positions much be filled if you want to supply arguments beyond the first couple of positions because everything is positional due to the nature of how link:https://rubyapi.org/o/method#method-i-parameters[Method#parameters] works. Use `nil` to fill an optional argument when you don't need it.
-* The `:rest` (single splat) argument must an array or `nil` if not present because even though it is _optional_, it is still _positional_.
+* All positions must be filled if you want to supply arguments beyond the first couple of positions because everything is positional due to the nature of how link:https://rubyapi.org/o/method#method-i-parameters[Method#parameters] works. Use `nil` to fill an optional argument when you don't need it.
+* The `:rest` (single splat) argument must be an array or `nil` if not present because even though it is _optional_, it is still _positional_.
 * The `:keyrest` (double splat) argument -- much like the `:rest` argument -- must be a hash or `nil` if not present.
+
+Lastly, in all of the above examples, only an array of arguments has been used but you can pass in a single argument too (i.e. non-array). This is handy for method signatures which have only a single parameter or only use splats. Having to remember to wrap your argument in an array each time can get tedious so when _only_ a single argument is supplied, the categorizer will automatically cast the argument as an array. A good example of this use case is when using structs. Example:
+
+[source,ruby]
+----
+url = Struct.new :label, :url, keyword_init: true
+
+Marameters.categorize(url.method(:new).parameters, {label: "Eaxmple", url: "https://example.com"})
+          .then { |splat| url.new(*splat.positionals, **splat.keywords) }
+
+# Yields: #<struct label="Eaxmple", url="https://example.com">
+----
 
 For further details, please refer back to my {article_link} article mentioned in the _Requirements_ section.
 

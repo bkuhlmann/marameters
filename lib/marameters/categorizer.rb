@@ -14,7 +14,7 @@ module Marameters
 
     def call arguments
       @record = model.new
-      map arguments
+      map arguments.is_a?(Array) ? arguments : [arguments]
       record
     end
 

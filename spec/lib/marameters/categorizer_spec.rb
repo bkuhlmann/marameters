@@ -29,6 +29,14 @@ RSpec.describe Marameters::Categorizer do
       )
     end
 
+    it "casts an argument as an array if not already an array" do
+      expect(categorizer.call(1)).to have_attributes(
+        positionals: [1, nil],
+        keywords: {},
+        block: nil
+      )
+    end
+
     it "clears and rebuilds arguments when called multiple times" do
       arguments = [1, 2, nil, {four: 4}]
       categorizer.call arguments
