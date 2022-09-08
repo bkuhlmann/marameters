@@ -23,7 +23,13 @@ module Marameters
     attr_reader :parameters, :model, :record
 
     def map arguments
-      parameters.each.with_index { |pair, index| filter pair, arguments[index] }
+      return record if arguments.empty?
+
+      size = arguments.size
+
+      parameters.each.with_index do |pair, index|
+        filter pair, arguments[index] if index < size
+      end
     end
 
     def filter pair, value

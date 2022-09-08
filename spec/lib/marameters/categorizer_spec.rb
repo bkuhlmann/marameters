@@ -12,11 +12,7 @@ RSpec.describe Marameters::Categorizer do
     let(:maximum) { [1, 2, [98, 99], {four: 4}, {five: 5}, {twenty: 20, thirty: 30}, function] }
 
     it "answers empty arguments when given empty arguments" do
-      expect(categorizer.call([])).to have_attributes(
-        positionals: [nil, nil],
-        keywords: {},
-        block: nil
-      )
+      expect(categorizer.call([])).to have_attributes(positionals: [], keywords: {}, block: nil)
     end
 
     it "answers empty arguments when no parameters exist for arguments" do
@@ -30,11 +26,7 @@ RSpec.describe Marameters::Categorizer do
     end
 
     it "casts an argument as an array if not already an array" do
-      expect(categorizer.call(1)).to have_attributes(
-        positionals: [1, nil],
-        keywords: {},
-        block: nil
-      )
+      expect(categorizer.call(1)).to have_attributes(positionals: [1], keywords: {}, block: nil)
     end
 
     it "clears and rebuilds arguments when called multiple times" do
