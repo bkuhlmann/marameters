@@ -383,6 +383,15 @@ puts Example.say "Hello"
 
 == Development
 
+To contribute, run:
+
+[source,bash]
+----
+git clone https://github.com/bkuhlmann/marameters
+cd marameters
+bin/setup
+----
+
 You can also use the IRB console for direct access to all objects:
 
 [source,bash]
