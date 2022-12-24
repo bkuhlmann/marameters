@@ -45,7 +45,9 @@ module Marameters
 
     def names = parameters.map { |_kind, name| name }
 
-    def only_bare_splats? = (parameters in [[:rest]] | [[:keyrest]] | [[:rest], [:keyrest]])
+    def only_bare_splats?
+      parameters in [[:rest, :*]] | [[:keyrest, :**]] | [[:rest, :*], [:keyrest, :**]]
+    end
 
     def only_double_splats? = (parameters in [[:keyrest, *]])
 

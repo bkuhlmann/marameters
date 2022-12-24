@@ -524,8 +524,8 @@ RSpec.describe Marameters::Probe do
               .parameters
       end
 
-      it "answers empty array" do
-        expect(probe.splats).to eq([])
+      it "answers splats" do
+        expect(probe.splats).to eq(%i[* **])
       end
     end
 
