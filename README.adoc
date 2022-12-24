@@ -44,7 +44,7 @@ gem "marameters"
 
 == Usage
 
-At a high level, you can use `Marameters` as a single object interface for accessing all capabilities provided by this gem. Here's an overview:
+At a high level, you can use `Marameters` as a single Object API for accessing all capabilities provided by this gem. Here's an overview:
 
 [source,ruby]
 ----
@@ -63,7 +63,7 @@ Marameters.categorize parameters, arguments
 
 Marameters.of self, :demo            # []
 
-probe = Marameters.probe parameters
+probe = Marameters.for parameters
 probe.to_a                           # [[:req, :one], [:opt, :two], [:key, :three]]
 probe.positionals                    # [:one, :two]
 probe.keywords                       # [:three]
@@ -79,7 +79,7 @@ Read on to learn more about the details on how each of these methods work and th
 
 === Probe
 
-The probe allows you to analyze a method's parameters. To understand how, consider the following demonstration class:
+The probe allows you to analyze a method's parameters. To understand how, consider the following:
 
 [source,ruby]
 ----

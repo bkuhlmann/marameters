@@ -27,9 +27,9 @@ RSpec.describe Marameters do
     end
   end
 
-  describe ".probe" do
+  describe ".for" do
     it "answers parameter details" do
-      expect(marameters.probe(comprehensive).to_a).to eq(
+      expect(marameters.for(comprehensive).to_a).to eq(
         [
           %i[req one],
           %i[opt two],
