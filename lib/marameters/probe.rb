@@ -46,12 +46,17 @@ module Marameters
     def names = parameters.map { |_kind, name| name }
 
     def only_bare_splats?
-      parameters in [[:rest, :*]] | [[:keyrest, :**]] | [[:rest, :*], [:keyrest, :**]]
+      parameters in [[:rest]] \
+                    | [[:keyrest]] \
+                    | [[:rest], [:keyrest]] \
+                    | [[:rest, :*]] \
+                    | [[:keyrest, :**]] \
+                    | [[:rest, :*], [:keyrest, :**]]
     end
 
-    def only_double_splats? = (parameters in [[:keyrest, *]])
+    def only_double_splats? = (parameters in [[:keyrest]] | [[:keyrest, *]])
 
-    def only_single_splats? = (parameters in [[:rest, *]])
+    def only_single_splats? = (parameters in [[:rest]] | [[:rest, *]])
 
     def positionals? = positionals.any?
 

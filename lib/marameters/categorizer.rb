@@ -34,8 +34,8 @@ module Marameters
 
     def filter pair, value
       case pair
-        in [:rest, :*] then splat_positional value
-        in [:keyrest, :**] then record.keywords = Hash value
+        in [:rest] | [:rest, :*] then splat_positional value
+        in [:keyrest] | [:keyrest, :**] then record.keywords = Hash value
         in [:req, *] | [:opt, *] then record.positionals.append value
         in [:rest, *] then record.positionals.append(*value)
         in [:nokey] then nil

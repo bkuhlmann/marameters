@@ -34,7 +34,7 @@ RSpec.describe Marameters::Probe do
   end
 
   describe "#block" do
-    context "with only bare block" do
+    context "with only block" do
       let :parameters do
         Module.new { def trial(&) = super }
               .instance_method(:trial)
@@ -236,6 +236,14 @@ RSpec.describe Marameters::Probe do
 
   describe "#only_bare_splats?" do
     context "with only single bare splat" do
+      let(:parameters) { Data.method(:define).parameters }
+
+      it "answers true" do
+        expect(probe.only_bare_splats?).to be(true)
+      end
+    end
+
+    context "with only single splat" do
       let :parameters do
         Module.new { def trial(*) = super }
               .instance_method(:trial)
@@ -259,7 +267,7 @@ RSpec.describe Marameters::Probe do
       end
     end
 
-    context "with only double bare splat" do
+    context "with only double splat" do
       let :parameters do
         Module.new { def trial(**) = super }
               .instance_method(:trial)
@@ -317,7 +325,7 @@ RSpec.describe Marameters::Probe do
   end
 
   describe "#only_double_splats?" do
-    context "with only single bare splat" do
+    context "with only single splat" do
       let :parameters do
         Module.new { def trial(*) = super }
               .instance_method(:trial)
@@ -329,19 +337,7 @@ RSpec.describe Marameters::Probe do
       end
     end
 
-    context "with only single named splat" do
-      let :parameters do
-        Module.new { def trial(*one) = super }
-              .instance_method(:trial)
-              .parameters
-      end
-
-      it "answers false" do
-        expect(probe.only_double_splats?).to be(false)
-      end
-    end
-
-    context "with only double bare splat" do
+    context "with only double splat" do
       let :parameters do
         Module.new { def trial(**) = super }
               .instance_method(:trial)
@@ -365,21 +361,9 @@ RSpec.describe Marameters::Probe do
       end
     end
 
-    context "with only single and double bare splats" do
+    context "with only single and double splats" do
       let :parameters do
         Module.new { def trial(*, **) = super }
-              .instance_method(:trial)
-              .parameters
-      end
-
-      it "answers false" do
-        expect(probe.only_double_splats?).to be(false)
-      end
-    end
-
-    context "with only single and double named splats" do
-      let :parameters do
-        Module.new { def trial(*one, **two) = super }
               .instance_method(:trial)
               .parameters
       end
@@ -400,6 +384,14 @@ RSpec.describe Marameters::Probe do
 
   describe "#only_single_splats?" do
     context "with only single bare splat" do
+      let(:parameters) { Data.method(:define).parameters }
+
+      it "answers true" do
+        expect(probe.only_single_splats?).to be(true)
+      end
+    end
+
+    context "with only single splat" do
       let :parameters do
         Module.new { def trial(*) = super }
               .instance_method(:trial)
@@ -423,7 +415,7 @@ RSpec.describe Marameters::Probe do
       end
     end
 
-    context "with only double bare splat" do
+    context "with only double splat" do
       let :parameters do
         Module.new { def trial(**) = super }
               .instance_method(:trial)
@@ -435,33 +427,9 @@ RSpec.describe Marameters::Probe do
       end
     end
 
-    context "with only double named splat" do
-      let :parameters do
-        Module.new { def trial(**one) = super }
-              .instance_method(:trial)
-              .parameters
-      end
-
-      it "answers false" do
-        expect(probe.only_single_splats?).to be(false)
-      end
-    end
-
-    context "with only single and double bare splats" do
+    context "with only single and double splats" do
       let :parameters do
         Module.new { def trial(*, **) = super }
-              .instance_method(:trial)
-              .parameters
-      end
-
-      it "answers false" do
-        expect(probe.only_single_splats?).to be(false)
-      end
-    end
-
-    context "with only single and double named splats" do
-      let :parameters do
-        Module.new { def trial(*one, **two) = super }
               .instance_method(:trial)
               .parameters
       end
