@@ -1,5 +1,9 @@
 = Versions
 
+== 1.0.1 (2022-12-27)
+
+* Fixed bare single and double splat pattern matching - Brooke Kuhlmann
+
 == 1.0.0 (2022-12-25)
 
 * Added RSpec binstub - Brooke Kuhlmann
