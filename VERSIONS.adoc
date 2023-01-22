@@ -1,5 +1,15 @@
 = Versions
 
+== 1.0.2 (2023-01-22)
+
+* Fixed Guardfile to use RSpec binstub - Brooke Kuhlmann
+* Added Rake binstub - Brooke Kuhlmann
+* Updated to Caliber 0.21.0 - Brooke Kuhlmann
+* Updated to Git Lint 5.0.0 - Brooke Kuhlmann
+* Updated to SimpleCov 0.22.0 - Brooke Kuhlmann
+* Refactored RSpec helper to use spec root constant - Brooke Kuhlmann
+* Refactored splat struct default parameters - Brooke Kuhlmann
+
 == 1.0.1 (2022-12-27)
 
 * Fixed bare single and double splat pattern matching - Brooke Kuhlmann
