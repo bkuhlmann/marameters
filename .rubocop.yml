@@ -4,19 +4,19 @@ inherit_gem:
 Lint/UselessMethodDefinition:
   Exclude:
     - "spec/lib/marameters/*"
-
 Metrics/AbcSize:
   Exclude:
     - "lib/marameters/categorizer.rb"
-
 Metrics/CyclomaticComplexity:
   Exclude:
     - "lib/marameters/builder.rb"
-
+    - "lib/marameters/categorizer.rb"
 Metrics/MethodLength:
   Exclude:
     - "lib/marameters/categorizer.rb"
-
 Metrics/ParameterLists:
   Exclude:
     - "spec/support/shared_contexts/parameters.rb"
+Metrics/PerceivedComplexity:
+  Exclude:
+    - "lib/marameters/categorizer.rb"
