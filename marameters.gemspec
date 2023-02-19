@@ -5,14 +5,14 @@ Gem::Specification.new do |spec|
   spec.version = "1.0.2"
   spec.authors = ["Brooke Kuhlmann"]
   spec.email = ["brooke@alchemists.io"]
-  spec.homepage = "https://www.alchemists.io/projects/marameters"
+  spec.homepage = "https://alchemists.io/projects/marameters"
   spec.summary = "Provides dynamic method parameter construction and deconstruction."
   spec.license = "Hippocratic-2.1"
 
   spec.metadata = {
     "bug_tracker_uri" => "https://github.com/bkuhlmann/marameters/issues",
-    "changelog_uri" => "https://www.alchemists.io/projects/marameters/versions",
-    "documentation_uri" => "https://www.alchemists.io/projects/marameters",
+    "changelog_uri" => "https://alchemists.io/projects/marameters/versions",
+    "documentation_uri" => "https://alchemists.io/projects/marameters",
     "funding_uri" => "https://github.com/sponsors/bkuhlmann",
     "label" => "Marameters",
     "rubygems_mfa_required" => "true",
