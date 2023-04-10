@@ -7,6 +7,8 @@ detectors:
     exclude:
       - "Marameters::Builder#call"
       - "Marameters::Categorizer#filter"
+  LongParameterList:
+    enabled: false
   NilCheck:
     exclude:
       - "Marameters::Defaulter#call"
