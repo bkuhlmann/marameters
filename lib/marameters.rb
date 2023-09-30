@@ -10,6 +10,8 @@ end
 
 # Main namespace.
 module Marameters
+  def self.loader(registry = Zeitwerk::Registry) = registry.loader_for __FILE__
+
   def self.categorize(parameters, arguments) = Categorizer.new(parameters).call(arguments)
 
   def self.of(...) = Probe.of(...)
