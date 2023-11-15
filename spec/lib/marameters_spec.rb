@@ -7,6 +7,17 @@ RSpec.describe Marameters do
 
   include_context "with parameters"
 
+  describe ".loader" do
+    it "eager loads" do
+      expectation = proc { described_class.loader.eager_load force: true }
+      expect(&expectation).not_to raise_error
+    end
+
+    it "answers unique tag" do
+      expect(described_class.loader.tag).to eq("marameters")
+    end
+  end
+
   describe ".categorize" do
     it "answers categorized arguments" do
       function = proc { "test" }
