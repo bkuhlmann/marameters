@@ -70,7 +70,7 @@ module Marameters
 
     def define_variable category, kinds
       parameters.filter_map { |kind, name| next name if kinds.include? kind }
-                .then { |collection| instance_variable_set "@#{category}", collection }
+                .then { |collection| instance_variable_set :"@#{category}", collection }
     end
   end
 end
