@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require "refinements/structs"
+require "refinements/struct"
 
 module Marameters
   # Builds the primary argument categories based on method parameters and arguments.
   class Categorizer
-    using Refinements::Structs
+    using Refinements::Struct
 
     def initialize parameters, model: Splat
       @parameters = parameters
