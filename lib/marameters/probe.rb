@@ -45,7 +45,6 @@ module Marameters
 
     def names = parameters.map { |_kind, name| name }
 
-    # rubocop:todo Style/RedundantLineContinuation
     def only_bare_splats?
       parameters in [[:rest]] \
                     | [[:keyrest]] \
@@ -54,7 +53,6 @@ module Marameters
                     | [[:keyrest, :**]] \
                     | [[:rest, :*], [:keyrest, :**]]
     end
-    # rubocop:enable Style/RedundantLineContinuation
 
     def only_double_splats? = (parameters in [[:keyrest]] | [[:keyrest, *]])
 
