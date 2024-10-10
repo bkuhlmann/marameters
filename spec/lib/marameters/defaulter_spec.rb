@@ -6,12 +6,14 @@ RSpec.describe Marameters::Defaulter do
   subject(:defaulter) { described_class }
 
   describe "#call" do
-    it "answers value as string with custom passthrough" do
-      expect(defaulter.call("!Object.new", passthrough: "!")).to eq("Object.new")
-    end
+    it "fails when given a default" do
+      function = -> no { no }
+      expectation = proc { defaulter.call function }
 
-    it "answers object as string" do
-      expect(defaulter.call("*Object.new")).to eq("Object.new")
+      expect(&expectation).to raise_error(
+        ArgumentError,
+        "Avoid using parameters for proc/lambda defaults."
+      )
     end
 
     it "answers string as string" do
@@ -20,6 +22,20 @@ RSpec.describe Marameters::Defaulter do
 
     it "answers symbol as string" do
       expect(defaulter.call(:test)).to eq(":test")
+    end
+
+    it "answers VM abstract syntax tree node (proc) as string" do
+      function = proc { Object.new }
+      node = RubyVM::AbstractSyntaxTree.of function
+
+      expect(defaulter.call(node)).to eq("Object.new")
+    end
+
+    it "answers VM abstract syntax tree node (lambda) as string" do
+      function = -> { Object.new }
+      node = RubyVM::AbstractSyntaxTree.of function
+
+      expect(defaulter.call(node)).to eq("Object.new")
     end
 
     it "answers nil as string" do
