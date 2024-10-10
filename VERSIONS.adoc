@@ -1,5 +1,27 @@
 = Versions
 
+== 4.0.0 (2024-12-27)
+
+* ✅ Fixed objects to be frozen by default - Brooke Kuhlmann
+* 🟢 Added probe whole value behavior - Brooke Kuhlmann
+* 🟢 Added signature argument forwarding - Brooke Kuhlmann
+* 🟢 Added signature forwarder - Brooke Kuhlmann
+* 🟢 Added signature inheritor - Brooke Kuhlmann
+* 🟢 Added signature super - Brooke Kuhlmann
+* 🟢 Added source extractor - Brooke Kuhlmann
+* 🟢 Added source reader - Brooke Kuhlmann
+* 🟢 Added version release notes - Brooke Kuhlmann
+* 🔼 Updated categorizer to take parameters and arguments - Brooke Kuhlmann
+* 🔼 Updated defaulter to use source parsing - Brooke Kuhlmann
+* 🔼 Updated signature to accept array of parameters - Brooke Kuhlmann
+* 🔼 Updated splat struct as forward model - Brooke Kuhlmann
+* 🔼 Updated to Caliber 0.68.0 - Brooke Kuhlmann
+* 🔼 Updated to IRB Kit 1.0.0 - Brooke Kuhlmann
+* 🔼 Updated to Refinements 13.0.0 - Brooke Kuhlmann
+* 🔼 Updated to Ruby 3.4.0 - Brooke Kuhlmann
+* ⛔️ Removed lesser used probe methods - Brooke Kuhlmann
+* 🔁 Refactored signature specific objects to signatures namespace - Brooke Kuhlmann
+
 == 3.12.0 (2024-11-09)
 
 * 🔼 Updated to Caliber 0.64.0 - Brooke Kuhlmann

@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |spec|
   spec.name = "marameters"
-  spec.version = "3.12.0"
+  spec.version = "4.0.0"
   spec.authors = ["Brooke Kuhlmann"]
   spec.email = ["brooke@alchemists.io"]
   spec.homepage = "https://alchemists.io/projects/marameters"
-  spec.summary = "A dynamic method parameter inspector."
+  spec.summary = "A dynamic method parameter enhancer."
   spec.license = "Hippocratic-2.1"
 
   spec.metadata = {
