@@ -6,12 +6,28 @@ RSpec.describe Marameters::Signatures::Defaulter do
   subject(:defaulter) { described_class }
 
   describe "#call" do
-    it "answers value as string with custom passthrough" do
-      expect(defaulter.call("!Object.new", passthrough: "!")).to eq("Object.new")
+    let(:name) { "test" }
+
+    it "answers source code when wrapped in a Proc" do
+      function = proc { Object.new }
+      expect(defaulter.call(function)).to eq("Object.new")
     end
 
-    it "answers object as string" do
-      expect(defaulter.call("*Object.new")).to eq("Object.new")
+    it "fails when given a lambda" do
+      function = -> { "Danger!" }
+      expectation = proc { defaulter.call function }
+
+      expect(&expectation).to raise_error(TypeError, "Use procs instead of lambdas for defaults.")
+    end
+
+    it "fails when proc uses parameters" do
+      function = proc { |no| no }
+      expectation = proc { defaulter.call function }
+
+      expect(&expectation).to raise_error(
+        ArgumentError,
+        "Avoid using parameters for proc defaults."
+      )
     end
 
     it "answers string as string" do

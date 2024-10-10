@@ -46,11 +46,11 @@ RSpec.describe Marameters::Signature do
       end
     end
 
-    context "with optional positional (object)" do
-      let(:parameters) { [[:opt, :two, "*Object.new"]] }
+    context "with optional positional (proc)" do
+      let(:parameters) { [[:opt, :two, proc { Object.new }]] }
 
       it "answers parameter" do
-        expect(signature.public_send(method)).to eq("two = Object.new")
+        expect(signature.public_send(method)).to eq(%(two = Object.new))
       end
     end
 
@@ -111,7 +111,7 @@ RSpec.describe Marameters::Signature do
     end
 
     context "with optional keyword (object)" do
-      let(:parameters) { [[:key, :five, "*Object.new"]] }
+      let(:parameters) { [[:key, :five, proc { Object.new }]] }
 
       it "answers parameter" do
         expect(signature.public_send(method)).to eq("five: Object.new")

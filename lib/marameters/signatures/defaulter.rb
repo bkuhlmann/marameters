@@ -3,9 +3,13 @@
 module Marameters
   module Signatures
     # Computes a method parameter's default value.
-    Defaulter = lambda do |value, passthrough: "*"|
+    Defaulter = lambda do |value, extractor: Sources::Extractor.new|
       case value
-        when /\A#{Regexp.escape passthrough}/ then value.delete_prefix passthrough
+        when Proc
+          fail TypeError, "Use procs instead of lambdas for defaults." if value.lambda?
+          fail ArgumentError, "Avoid using parameters for proc defaults." if value.arity.nonzero?
+
+          extractor.call value
         when String then value.dump
         when Symbol then value.inspect
         when nil then "nil"
