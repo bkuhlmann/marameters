@@ -4,6 +4,7 @@
 
 :amazing_print_link: link:https://github.com/amazing-print/amazing_print[Amazing Print]
 :article_link: link:https://alchemists.io/articles/ruby_method_parameters_and_arguments[method parameters and arguments]
+:infusible_link: link:/projects/infusible[Infusible]
 
 = Marameters
 
@@ -62,40 +63,66 @@ require "marameters"
 
 At a high level, you can use `Marameters` as a single Object API for accessing all capabilities provided by this gem. Here's an overview:
 
+*Setup*
+
 [source,ruby]
 ----
-# Setup
 def demo(one, two = 2, three: 3) = puts "One: #{one}, Two: #{two}, Three: #{three}"
 
 parameters = method(:demo).parameters
 arguments = %w[one two]
+----
 
-# Marameters::Categorizer wrapper
+*Categorize*
 
+[source,ruby]
+----
 Marameters.categorize parameters, arguments
-# #<struct Marameters::Splat positionals=["one", "two"], keywords={}, block=nil>
+# #<struct Marameters::Models::Forward positionals=["one", "two"], keywords={}, block=nil>
+----
 
-# Marameters::Probe wrapper
+*Probe*
 
+[source,ruby]
+----
 Marameters.of self, :demo            # []
 
 probe = Marameters.for parameters
-probe.to_a                           # [[:req, :one], [:opt, :two], [:key, :three]]
 probe.positionals                    # [:one, :two]
 probe.keywords                       # [:three]
-probe.block                          # nil
-
-# Marameters::Signature wrapper
-
-Marameters.signature({req: :one, opt: [:two, 2], key: [:three, 3]}).to_s
-# one, two = 2, three: 3
+probe.to_a                           # [[:req, :one], [:opt, :two], [:key, :three]]
 ----
 
-Read on to learn more about the details on how each of these methods work and the objects they wrap.
+*Signature*
+
+[source,ruby]
+----
+Marameters.signature([%i[req one], [:opt, :two, 2], [:key, :three, 3]]).to_s
+# "one, two = 2, three: 3"
+----
+
+=== Constants
+
+The `KINDS` constant allows you to know the kinds of parameters allowed:
+
+[source,ruby]
+----
+Marameters::KINDS
+# [
+#   :req,
+#   :opt,
+#   :rest,
+#   :nokey,
+#   :keyreq,
+#   :key,
+#   :keyrest,
+#   :block
+# ]
+----
 
 === Probe
 
-The probe allows you to analyze a method's parameters. To understand how, consider the following:
+The probe (`Marameters::Probe`) allows you to analyze a method's parameters. To understand how, consider the following:
 
 [source,ruby]
 ----
@@ -120,58 +147,93 @@ You can then probe the `#all` method's parameters as follows:
 
 [source,ruby]
 ----
-probe = Marameters::Probe.new Demo.instance_method(:all).parameters
+probe = Marameters.for Demo.instance_method(:all).parameters
 
-probe.block                # :seven
-probe.block?               # true
-probe.empty?               # false
-probe.keywords             # [:four, :five]
-probe.keywords?            # true
-probe.kind?(:keyrest)      # true
-probe.kinds                # [:req, :opt, :rest, :keyreq, :key, :keyrest, :block]
-probe.name?(:three)        # true
-probe.names                # [:one, :two, :three, :four, :five, :six, :seven]
-probe.only_bare_splats?    # false
-probe.only_double_splats?  # false
-probe.only_single_splats?  # false
-probe.positionals          # [:one, :two]
-probe.positionals?         # true
-probe.splats               # [:three, :six]
-probe.splats?              # true
-probe.to_a                 # [[:req, :one], [:opt, :two], [:rest, :three], [:keyreq, :four], [:key, :five], [:keyrest, :six], [:block, :seven]]
-probe.to_h                 # {req: :one, opt: :two, rest: :three, keyreq: :four, key: :five, keyrest: :six, block: :seven}
+probe.deconstruct                      # (same as to_a, see below)
+probe.empty?                           # false
+probe.include? %i[req one]             # true
+probe.keywords                         # [:four, :five]
+probe.keywords?                        # true
+probe.keywords_for :four, four: :demo  # {four: :demo}
+probe.kind?(:keyrest)                  # true
+
+probe.kinds
+# [:req, :opt, :rest, :keyreq, :key, :keyrest, :block]
+
+probe.name?(:three)                    # true
+
+probe.names
+# [:one, :two, :three, :four, :five, :six, :seven]
+
+probe.only_bare_splats?                # false
+probe.only_double_splats?              # false
+probe.only_single_splats?              # false
+probe.positionals                      # [:one, :two]
+probe.positionals?                     # true
+probe.positionals_and_maybe_keywords?  # true
+
+probe.to_a
+# [
+#   [:req, :one],
+#   [:opt, :two],
+#   [:rest, :three],
+#   [:keyreq, :four],
+#   [:key, :five],
+#   [:keyrest, :six],
+#   [:block, :seven]
+# ]
 ----
 
-In contrast the above, we can also probe the `#none` method which has no parameters for a completely
+In contrast to the above, we can probe the `#none` method which has no parameters for a completely
 different result:
 
 [source,ruby]
 ----
-probe = Marameters::Probe.new Demo.instance_method(:none).parameters
+probe = Marameters.for Demo.instance_method(:none).parameters
 
-probe.block                # nil
-probe.block?               # false
-probe.empty?               # true
-probe.keywords             # []
-probe.keywords?            # false
-probe.kind?(:req)          # true
-probe.kinds                # []
-probe.name?(:three)        # false
-probe.names                # []
-probe.only_bare_splats?    # false
-probe.only_double_splats?  # false
-probe.only_single_splats?  # false
-probe.positionals          # []
-probe.positionals?         # false
-probe.splats               # []
-probe.splats?              # false
-probe.to_a                 # []
-probe.to_h                 # {}
+probe.deconstruct                      # (same as to_a, see below)
+probe.empty?                           # true
+probe.include? %i[req one]             # false
+probe.keywords                         # []
+probe.keywords?                        # false
+probe.keywords_for :four, four: :demo  # {}
+probe.kind?(:req)                      # true
+probe.kinds                            # []
+probe.name?(:three)                    # false
+probe.names                            # []
+probe.only_bare_splats?                # false
+probe.only_double_splats?              # false
+probe.only_single_splats?              # false
+probe.positionals                      # []
+probe.positionals?                     # false
+probe.positionals_and_maybe_keywords?  # false
+probe.to_a                             # []
 ----
 
-=== Categorizer
+The `#keywords_for` method might need additional explaining because it's meant for selecting keywords which adhere to _either_ of the following criteria:
 
-The categorizer allows you to dynamically build positional, keyword, and block arguments for message passing. This is most valuable when you know the object and method while needing to align the arguments in the right order. Here's a demonstration where {amazing_print_link} (i.e. `ap`) is used to format the output:
+* The given keys don't match any key in the given attributes.
+* The given keys match the parameter keywords.
+
+[source,ruby]
+----
+module Demo
+  def self.keywords(four:, five: 5, **six) = puts "Four: #{four}, Five: #{five}, Six: #{six}"
+end
+
+probe = Marameters.for Demo.method(:keywords).parameters
+
+probe.keywords_for :a, a: 1, four: 4         # {four: 4}
+probe.keywords_for :four, a: 1               # {a: 1}
+probe.keywords_for :a, four: 4, five: :five  # {four: 4, five: :five}
+probe.keywords_for :a, six: {name: :test}    # {six: {name: :test}}
+----
+
+This useful in gems, like {infusible_link}, when determining which keyword arguments to pass up to the superclass.
+
+=== Categorize
+
+Categorization (`Marameters::Categorizer`) allows you to dynamically build positional, keyword, and block arguments for message passing. This is most valuable when you know the object and method while needing to align the arguments in the right order. Here's a demonstration where {amazing_print_link} (i.e. `ap`) is used to format the output:
 
 [source,ruby]
 ----
@@ -191,18 +253,18 @@ end
 
 module Inspector
   def self.call arguments
-    Marameters::Categorizer.new(Demo.method(:test).parameters)
-                           .call(arguments).then do |splat|
-                             ap splat
-                             puts
-                             Demo.test(*splat.positionals, **splat.keywords, &splat.block)
-                           end
+    Marameters.categorize(Demo.method(:test).parameters, arguments)
+              .then do |record|
+                ap record
+                puts
+                Demo.test(*record.positionals, **record.keywords, &record.block)
+              end
   end
 end
 
 Inspector.call [1, nil, nil, {four: 4}]
 
-# #<Struct:Marameters::Splat:0x00021930
+# #<Struct:Marameters::Models::Forward:0x00021930
 #   block = nil,
 #   keywords = {
 #     :four => 4
@@ -226,7 +288,7 @@ Inspector.call [1, nil, nil, {four: 4}]
 When we step through the above implementation and output, we see the following unfold:
 
 . The `Demo` module allows us to define a maximum set of parameters and then print the arguments received for inspection purposes.
-. The `Inspector` module provides a wrapper around the `Categorizer` so we can conveniently pass in different arguments for experimentation purposes.
+. The `Inspector` module provides a wrapper around the categorization so we can conveniently pass in different arguments for experimentation purposes.
 . We pass in our arguments to `Inspector.call` where `nil` is used for optional arguments and hashes for keyword arguments.
 . Once inside `Inspector.call`, the `Categorizer` is initialized with the `Demo.test` method parameters.
 . Then the `splat` (i.e. Struct) is printed out so you can see the categorized positional, keyword, and block arguments.
@@ -240,7 +302,7 @@ Inspector.call [1, 2, [98, 99], {four: 4}, {five: 5}, {twenty: 20, thirty: 30}, 
 
 # Output
 
-# #<Struct:Marameters::Splat:0x00029cc0
+# #<Struct:Marameters::Models::Forward:0x00029cc0
 #   block = #<Proc:0x000000010a88cec0 (irb):1>,
 #   keywords = {
 #       :four => 4,
@@ -296,108 +358,183 @@ ap arguments
 | `%i[block seven]` | `#<Proc:0x0000000108edc778>`
 |===
 
-This also means that:
+This also means:
 
-* All positions must be filled if you want to supply arguments beyond the first couple of positions because everything is positional due to the nature of how link:https://rubyapi.org/o/method#method-i-parameters[Method#parameters] works. Use `nil` to fill an optional argument when you don't need it.
+* All positions must be filled if you want to supply arguments beyond the first couple of positions because everything is positional due to the nature of how link:https://docs.ruby-lang.org/en/master/Method.html#method-i-parameters[Method#parameters] works. Use `nil` to fill an optional argument when you don't need it.
 * The `:rest` (single splat) argument must be an array or `nil` if not present because even though it is _optional_, it is still _positional_.
 * The `:keyrest` (double splat) argument -- much like the `:rest` argument -- must be a hash or `nil` if not present.
 
-Lastly, in all of the above examples, only an array of arguments has been used but you can pass in a single argument too (i.e. non-array). This is handy for method signatures which have only a single parameter or only use splats. Having to remember to wrap your argument in an array each time can get tedious so when _only_ a single argument is supplied, the categorizer will automatically cast the argument as an array. A good example of this use case is when using structs. Example:
+Lastly, in all of the above examples, only an array of arguments has been used but you can pass in a single argument too (i.e. non-array). This is handy for method signatures which have only a single parameter or only use splats.
+
+For C-based primitives, like `Struct`, `Data`, etc., you'll want to provide a conversion method. Example:
 
 [source,ruby]
 ----
-url = Struct.new :label, :url, keyword_init: true
+url = Struct.new(:label, :url) do
+  def self.for(**) = new(**)
+end
 
-Marameters.categorize(url.method(:new).parameters, {label: "Eaxmple", url: "https://example.com"})
-          .then { |splat| url.new(*splat.positionals, **splat.keywords) }
+Marameters.categorize(url.method(:for).parameters, label: "Example", url: "https://example.com")
+          .then { |record| url.for(**record.keywords) }
 
-# Yields: #<struct label="Eaxmple", url="https://example.com">
+# Yields: #<struct label="Example", url="https://example.com">
 ----
 
-For further details, please refer back to my {article_link} article mentioned in the _Requirements_ section.
+For further details, please refer back to my {article_link} article mentioned in the xref:_requirements[Requirements] section.
 
 === Signature
 
-The signature class is the inverse of the probe class in that you want to feed it parameters for turning into a method signature. This is useful when dynamically building method signatures or using the same signature when metaprogramming multiple methods.
-
-The following demonstrates how you might construct a method signature with all possible parameters:
+The signature (`Marameters::Signature`) is the opposite of the probe class which allows you to turn a raw array of parameters into a method signature. This is most useful when metaprogramming and needing to dynamically build method signatures. Example:
 
 [source,ruby]
 ----
-signature = Marameters::Signature.new(
-  {
-    req: :one,
-    opt: [:two, 2],
-    rest: :three,
-    keyreq: :four,
-    key: [:five, 5],
-    keyrest: :six,
-    block: :seven
-  }
-)
+signature = Marameters.signature [[:opt, :text, "This is a test."]]
 
-puts signature
-# one, two = 2, *three, four:, five: 5, **six, &seven
+Example = Module.new do
+  module_eval <<~METHOD, __FILE__, __LINE__ + 1
+    def self.say(#{signature}) = text
+  METHOD
+end
+
+puts Example.say           # "This is a test."
+puts Example.say("Hello")  # "Hello"
 ----
 
-You'll notice that the parameters are a hash _and_ some values can be tuples. The reason is that
-it's easier to write a hash than a double nested array as normally produced by the probe or directly
-from `Method#parameters`. The optional positional and keyword parameters use tuples because you
-might want to supply a default value and this provides a way for you to do that with minimal syntax.
+==== Keys
+
+The following demonstrates how you can construct a method signature with all possible parameters using the same keys as used by `Method#parameters`:
+
+[source,ruby]
+----
+signature = Marameters.signature [
+  %i[req one],
+  %i[opt two],
+  %i[rest three],
+  %i[keyreq four],
+  %i[key five],
+  %i[keyrest six],
+  %i[block seven]
+]
+
+puts signature
+# "one, two = nil, *three, four:, five: nil, **six, &seven"
+----
+
+==== Values
+
+With the above examples, each sub-array uses a simple key/value pair to map the kind of parameter with the corresponding name. You can also provide a _third_ value when needing to provide a default value for _optional_ parameters. Example:
+
+[source,ruby]
+----
+puts Marameters.signature([[:opt, :one, 1], [:key, :two, 2]])
+# one = 1, two: 2
+----
+
 This can be demonstrated further by using optional keywords (same applies for optional positionals):
 
 [source,ruby]
 ----
-# With no default
-puts Marameters::Signature.new({key: :demo})
-# demo: nil
+# With implicit nil.
+puts Marameters.signature([%i[key demo]])
+# "demo: nil"
 
-# With explicit nil as default
-puts Marameters::Signature.new({key: [:demo, nil]})
-# demo: nil
+# With explicit nil.
+puts Marameters.signature([[:key, :demo, nil]])
+# "demo: nil"
 
-# With string as default
-puts Marameters::Signature.new({key: [:demo, "test"]})
-# demo: "test"
+# With any primitive.
+puts Marameters.signature([[:key, :demo, :test]])
+# "demo: :test"
 
-# With symbol as default
-puts Marameters::Signature.new({key: [:demo, :test]})
-# demo: :test
+# With proc (no parameters).
+puts Marameters.signature([[:key, :demo, proc { Object.new }]])
+# "demo: Object.new"
+# ⚠️ The above will answer "demo: nil" if used in IRB since the source can't be found.
 
-# With object(dependency) as default
-puts Marameters::Signature.new({key: [:demo, "*Object.new"]})
-# demo: Object.new
+# With proc (with parameters).
+puts Marameters.signature([[:key, :demo, proc { |no| no }]])
+# Avoid using parameters for proc defaults. (ArgumentError)
+
+# With lambda.
+puts Marameters.signature([[:key, :demo, -> { Object.new }]])
+# Use procs instead of lambdas for defaults. (TypeError)
 ----
 
-In the case of object dependencies, you need to wrap these in a string _and_ prefix them with a star
-(`*`) so the signature builder won't confuse them as normal strings. There are two reasons why this
-is important:
+You can use any primitive, custom object, etc. as a default despite the limited examples shown above.
 
-* The star (`*`) signifies you want an object to be passed through without further processing while
-  also not being confused as a normal string.
-* Objects wrapped as strings allows your dependency to be lazy loaded. Otherwise, if `Object.new`
-  was pass in directly, you'd be passing the evaluated instance (i.e.
-  `#<Object:0x0000000107df4028>`) which is not what you want until much later when your method is
-  defined.
+Procs _must_ be used when supplying complex objects as default values. _Avoid_ using parameters when using procs because only the source (body) of your proc will be used as a _literal_ string when building the method signature in order to ensure lazy evaluation.
 
-When you put all of this together, you can dynamically build a method as follows:
+Lastly, you can use anonymous splats/blocks by only supplying their kind. Example:
 
 [source,ruby]
 ----
-signature = Marameters::Signature.new({opt: [:text, "This is a test."]})
+puts Marameters.signature([[:rest], [:keyrest], [:block]])
+# "*, **, &"
+----
 
-Example = Module.new do
-  module_eval <<~DEFINITION, __FILE__, __LINE__ + 1
-    def self.say(#{signature}) = text
-  DEFINITION
+You can supply `nil` as a second element (i.e. the name) for each kind but that is the equivalent of the above.
+
+==== Argument Forwarding
+
+Use `:all` for building a method signature with argument forwarding. Example:
+
+[source, ruby]
+----
+puts Marameters.signature(:all)
+# "..."
+----
+
+Use of `:all` is special in that you must _only_ supply `:all` with no other keys/values or you'll get an `ArgumentError`.
+
+💡 This is only provided for convenience and completeness. In truth, you're better off writing `my_method(+...+)`, for example, than using this class.
+
+==== Bare
+
+Use an empty array when you need a bare method signature. Example:
+
+[source,ruby]
+----
+puts Marameters.signature []
+# ""
+----
+
+💡 This is only provided for convenience and completeness. In truth, if you need a bare method, then you don't need to use this class.
+
+==== Inheritance
+
+Object/method inheritance is more complicated than building a signature for a single method because you need to blend the super and sub parameters as a unified set of parameters. Additionally, you have to account for the arguments that need to be forwarded to the super method via the `super` keyword. To aid in this endeavor, the following objects are available to help you build these more complex method parameters and arguments:
+
+* `Marameters::Signatures::Inheritor`: Blends super and sub parameters to produce a unified set of parameters you can turn into a method signature.
+* `Marameters::Signatures::Super`: Blends super and sub parameters to produce arguments for forwarding via the `super` keyword. _This does not support disabled block forwarding (i.e. `&nil`) since there is no way to determine this from the super and sub parameters alone._
+
+Here's an example which incorporates both of the above:
+
+[source,ruby]
+----
+module Demo
+  def self.parent(one, two = 2, *three, &block) = nil
 end
 
-puts Example.say
-# This is a test.
+super_parameters = Marameters.for Demo.method(:parent).parameters
 
-puts Example.say "Hello"
-# Hello
+sub_parameters = Marameters.for [
+  [:opt, :two, 22],
+  %i[keyreq four],
+  [:key, :five, 5],
+  %i[keyrest six]
+]
+
+inheritor = Marameters::Signatures::Inheritor.new
+forwarder = Marameters::Signatures::Super.new
+
+puts Marameters.signature inheritor.call(super_parameters, sub_parameters)
+# "one, two = 22, *three, four:, five: 5, **six, &block"
+
+puts forwarder.call(super_parameters, sub_parameters)
+# "one, two, *three, &block"
 ----
+
+As you can see, the above combines the parameters of your super method with the parameters of your sub method in order to produce a method signature -- with no duplicates -- while ensuring you can forward all necessary parameters that the `super` keyword requires. Defaults, if given, will override previously defined defaults as is identical with standard object inheritance.
 
 == Development
 
