@@ -15,7 +15,7 @@ RSpec.describe Marameters::Signature do
 
   shared_examples "a string" do |method|
     context "with required positional" do
-      let(:parameters) { {req: :one} }
+      let(:parameters) { [%i[req one]] }
 
       it "answers parameter" do
         expect(signature.public_send(method)).to eq("one")
@@ -23,7 +23,7 @@ RSpec.describe Marameters::Signature do
     end
 
     context "with optional positional (integer)" do
-      let(:parameters) { {opt: [:two, 2]} }
+      let(:parameters) { [[:opt, :two, 2]] }
 
       it "answers parameter" do
         expect(signature.public_send(method)).to eq("two = 2")
@@ -31,7 +31,7 @@ RSpec.describe Marameters::Signature do
     end
 
     context "with optional positional (string)" do
-      let(:parameters) { {opt: [:two, "two"]} }
+      let(:parameters) { [[:opt, :two, "two"]] }
 
       it "answers parameter" do
         expect(signature.public_send(method)).to eq(%(two = "two"))
@@ -39,7 +39,7 @@ RSpec.describe Marameters::Signature do
     end
 
     context "with optional positional (symbol)" do
-      let(:parameters) { {opt: %i[two two]} }
+      let(:parameters) { [%i[opt two two]] }
 
       it "answers parameter" do
         expect(signature.public_send(method)).to eq("two = :two")
@@ -47,7 +47,7 @@ RSpec.describe Marameters::Signature do
     end
 
     context "with optional positional (object)" do
-      let(:parameters) { {opt: [:two, "*Object.new"]} }
+      let(:parameters) { [[:opt, :two, "*Object.new"]] }
 
       it "answers parameter" do
         expect(signature.public_send(method)).to eq("two = Object.new")
@@ -55,7 +55,7 @@ RSpec.describe Marameters::Signature do
     end
 
     context "with bare single splat" do
-      let(:parameters) { {rest: nil} }
+      let(:parameters) { [[:rest, nil]] }
 
       it "answers parameter" do
         expect(signature.public_send(method)).to eq("*")
@@ -63,7 +63,7 @@ RSpec.describe Marameters::Signature do
     end
 
     context "with named single splat" do
-      let(:parameters) { {rest: :three} }
+      let(:parameters) { [%i[rest three]] }
 
       it "answers parameter" do
         expect(signature.public_send(method)).to eq("*three")
@@ -71,7 +71,7 @@ RSpec.describe Marameters::Signature do
     end
 
     context "with no keywords" do
-      let(:parameters) { [:nokey] }
+      let(:parameters) { [[:nokey]] }
 
       it "answers parameter" do
         expect(signature.public_send(method)).to eq("**nil")
@@ -79,7 +79,7 @@ RSpec.describe Marameters::Signature do
     end
 
     context "with required keyword" do
-      let(:parameters) { {keyreq: :four} }
+      let(:parameters) { [%i[keyreq four]] }
 
       it "answers parameter" do
         expect(signature.public_send(method)).to eq("four:")
@@ -87,7 +87,7 @@ RSpec.describe Marameters::Signature do
     end
 
     context "with optional keyword (integer)" do
-      let(:parameters) { {key: [:five, 5]} }
+      let(:parameters) { [[:key, :five, 5]] }
 
       it "answers parameter" do
         expect(signature.public_send(method)).to eq("five: 5")
@@ -95,7 +95,7 @@ RSpec.describe Marameters::Signature do
     end
 
     context "with optional keyword (string)" do
-      let(:parameters) { {key: [:five, "five"]} }
+      let(:parameters) { [[:key, :five, "five"]] }
 
       it "answers parameter" do
         expect(signature.public_send(method)).to eq(%(five: "five"))
@@ -103,7 +103,7 @@ RSpec.describe Marameters::Signature do
     end
 
     context "with optional keyword (symbol)" do
-      let(:parameters) { {key: %i[five five]} }
+      let(:parameters) { [%i[key five five]] }
 
       it "answers parameter" do
         expect(signature.public_send(method)).to eq("five: :five")
@@ -111,7 +111,7 @@ RSpec.describe Marameters::Signature do
     end
 
     context "with optional keyword (object)" do
-      let(:parameters) { {key: [:five, "*Object.new"]} }
+      let(:parameters) { [[:key, :five, "*Object.new"]] }
 
       it "answers parameter" do
         expect(signature.public_send(method)).to eq("five: Object.new")
@@ -119,7 +119,7 @@ RSpec.describe Marameters::Signature do
     end
 
     context "with bare double splat" do
-      let(:parameters) { {keyrest: nil} }
+      let(:parameters) { [[:keyrest, nil]] }
 
       it "answers parameter" do
         expect(signature.public_send(method)).to eq("**")
@@ -127,7 +127,7 @@ RSpec.describe Marameters::Signature do
     end
 
     context "with named double splat" do
-      let(:parameters) { {keyrest: :six} }
+      let(:parameters) { [%i[keyrest six]] }
 
       it "answers parameter" do
         expect(signature.public_send(method)).to eq("**six")
@@ -135,7 +135,7 @@ RSpec.describe Marameters::Signature do
     end
 
     context "with bare block" do
-      let(:parameters) { {block: nil} }
+      let(:parameters) { [[:block, nil]] }
 
       it "answers parameter" do
         expect(signature.public_send(method)).to eq("&")
@@ -143,7 +143,7 @@ RSpec.describe Marameters::Signature do
     end
 
     context "with named block" do
-      let(:parameters) { {block: :seven} }
+      let(:parameters) { [%i[block seven]] }
 
       it "answers parameter" do
         expect(signature.public_send(method)).to eq("&seven")
@@ -152,15 +152,15 @@ RSpec.describe Marameters::Signature do
 
     context "with all kinds" do
       let :parameters do
-        {
-          req: :one,
-          opt: [:two, 2],
-          rest: :three,
-          keyreq: :four,
-          key: [:five, 5],
-          keyrest: :six,
-          block: :seven
-        }
+        [
+          %i[req one],
+          [:opt, :two, 2],
+          %i[rest three],
+          %i[keyreq four],
+          [:key, :five, 5],
+          %i[keyrest six],
+          %i[block seven]
+        ]
       end
 
       it "answers parameters" do
@@ -171,7 +171,7 @@ RSpec.describe Marameters::Signature do
     end
 
     context "with invalid kind" do
-      let(:parameters) { {bogus: :eight} }
+      let(:parameters) { [%i[bogus eight]] }
 
       it "fails with descriptive message" do
         expectation = proc { signature.public_send method }
@@ -187,7 +187,7 @@ RSpec.describe Marameters::Signature do
       mod = Module.new
 
       mod.module_eval <<~DEFINITION, __FILE__, __LINE__ + 1
-        def self.demo #{described_class.new({opt: [:two, 2]})}
+        def self.demo #{described_class.new [[:opt, :two, 2]]}
           two
         end
       DEFINITION

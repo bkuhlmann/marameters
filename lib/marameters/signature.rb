@@ -18,7 +18,7 @@ module Marameters
     attr_reader :parameters, :builder
 
     def build
-      parameters.reduce [] do |signature, (kind, (name, default))|
+      parameters.reduce [] do |signature, (kind, name, default)|
         signature << builder.call(kind, name, default:)
       end
     end

@@ -56,15 +56,15 @@ RSpec.describe Marameters do
 
   describe ".signature" do
     let :parameters do
-      {
-        req: :one,
-        opt: [:two, 2],
-        rest: :three,
-        keyreq: :four,
-        key: [:five, 5],
-        keyrest: :six,
-        block: :seven
-      }
+      [
+        %i[req one],
+        [:opt, :two, 2],
+        %i[rest three],
+        %i[keyreq four],
+        [:key, :five, 5],
+        %i[keyrest six],
+        %i[block seven]
+      ]
     end
 
     it "answers parameters" do
