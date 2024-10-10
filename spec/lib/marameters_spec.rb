@@ -68,7 +68,7 @@ RSpec.describe Marameters do
     end
 
     it "answers parameters" do
-      expect(marameters.signature(parameters).to_s).to eq(
+      expect(marameters.signature(**parameters).to_s).to eq(
         "one, two = 2, *three, four:, five: 5, **six, &seven"
       )
     end

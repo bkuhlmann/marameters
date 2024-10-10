@@ -3,9 +3,9 @@
 module Marameters
   # Builds a method's parameter signature.
   class Signature
-    def initialize parameters, builder: Builder.new
+    def initialize marameter_builder: Builder.new, **parameters
+      @marameter_builder = marameter_builder
       @parameters = parameters
-      @builder = builder
     end
 
     def to_s = build.join ", "
@@ -14,11 +14,11 @@ module Marameters
 
     private
 
-    attr_reader :parameters, :builder
+    attr_reader :marameter_builder, :parameters
 
     def build
       parameters.reduce [] do |signature, (kind, (name, default))|
-        signature << builder.call(kind, name, default:)
+        signature << marameter_builder.call(kind, name, default:)
       end
     end
   end

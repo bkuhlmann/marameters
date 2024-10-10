@@ -3,7 +3,7 @@
 require "spec_helper"
 
 RSpec.describe Marameters::Signature do
-  subject(:signature) { described_class.new parameters }
+  subject(:signature) { described_class.new(**parameters) }
 
   shared_examples "a string" do |method|
     context "with required positional" do
@@ -171,7 +171,7 @@ RSpec.describe Marameters::Signature do
       mod = Module.new
 
       mod.module_eval <<~DEFINITION, __FILE__, __LINE__ + 1
-        def self.demo #{described_class.new({opt: [:two, 2]})}
+        def self.demo #{described_class.new opt: [:two, 2]}
           two
         end
       DEFINITION
