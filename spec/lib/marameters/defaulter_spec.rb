@@ -3,49 +3,31 @@
 require "spec_helper"
 
 RSpec.describe Marameters::Defaulter do
-  subject(:defaulter) { described_class.new value }
-
-  describe ".call" do
-    it "answers value as string" do
-      expect(described_class.call(:test)).to eq(":test")
-    end
-  end
+  subject(:defaulter) { described_class }
 
   describe "#call" do
     it "answers value as string with custom passthrough" do
-      expect(described_class.new("!Object.new", passthrough: "!").call).to eq("Object.new")
+      expect(defaulter.call("!Object.new", passthrough: "!")).to eq("Object.new")
     end
 
-    context "with nil" do
-      let(:value) { nil }
-
-      it "answers nil as string" do
-        expect(defaulter.call).to eq("nil")
-      end
+    it "answers object as string" do
+      expect(defaulter.call("*Object.new")).to eq("Object.new")
     end
 
-    context "with passthrough" do
-      let(:value) { "*Object.new" }
-
-      it "answers object as string" do
-        expect(defaulter.call).to eq("Object.new")
-      end
+    it "answers string as string" do
+      expect(defaulter.call("test")).to eq(%("test"))
     end
 
-    context "with string" do
-      let(:value) { "test" }
-
-      it "answers string as string" do
-        expect(defaulter.call).to eq(%("test"))
-      end
+    it "answers symbol as string" do
+      expect(defaulter.call(:test)).to eq(":test")
     end
 
-    context "with symbol" do
-      let(:value) { :test }
+    it "answers nil as string" do
+      expect(defaulter.call(nil)).to eq("nil")
+    end
 
-      it "answers symbol as string" do
-        expect(defaulter.call).to eq(":test")
-      end
+    it "answers number as number" do
+      expect(defaulter.call(5)).to eq(5)
     end
   end
 end

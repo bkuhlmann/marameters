@@ -9,9 +9,6 @@ detectors:
       - "Marameters::Categorizer#filter"
   LongParameterList:
     enabled: false
-  NilCheck:
-    exclude:
-      - "Marameters::Defaulter#call"
   RepeatedConditional:
     exclude:
       - "Marameters::Categorizer"
