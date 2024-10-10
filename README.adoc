@@ -322,48 +322,40 @@ The following demonstrates how you might construct a method signature with all p
 
 [source,ruby]
 ----
-signature = Marameters::Signature.new(
-  {
-    req: :one,
-    opt: [:two, 2],
-    rest: :three,
-    keyreq: :four,
-    key: [:five, 5],
-    keyrest: :six,
-    block: :seven
-  }
-)
+signature = Marameters::Signature.new req: :one,
+                                      opt: [:two, 2],
+                                      rest: :three,
+                                      keyreq: :four,
+                                      key: [:five, 5],
+                                      keyrest: :six,
+                                      block: :seven
 
 puts signature
 # one, two = 2, *three, four:, five: 5, **six, &seven
 ----
 
-You'll notice that the parameters are a hash _and_ some values can be tuples. The reason is that
-it's easier to write a hash than a double nested array as normally produced by the probe or directly
-from `Method#parameters`. The optional positional and keyword parameters use tuples because you
-might want to supply a default value and this provides a way for you to do that with minimal syntax.
-This can be demonstrated further by using optional keywords (same applies for optional positionals):
+You'll notice the parameters are a hash _and_ some values are tuples. The reason is it's easier to write a hash than a double nested array as normally produced by the probe or directly from `Method#parameters`. The optional positional and keyword parameters use tuples because you might want to supply a default value using minimal syntax. This can be demonstrated further by using optional keywords (same applies for optional positionals):
 
 [source,ruby]
 ----
 # With no default
-puts Marameters::Signature.new({key: :demo})
+puts Marameters::Signature.new(key: :demo)
 # demo: nil
 
 # With explicit nil as default
-puts Marameters::Signature.new({key: [:demo, nil]})
+puts Marameters::Signature.new(key: [:demo, nil])
 # demo: nil
 
 # With string as default
-puts Marameters::Signature.new({key: [:demo, "test"]})
+puts Marameters::Signature.new(key: [:demo, "test"])
 # demo: "test"
 
 # With symbol as default
-puts Marameters::Signature.new({key: [:demo, :test]})
+puts Marameters::Signature.new(key: [:demo, :test])
 # demo: :test
 
 # With object(dependency) as default
-puts Marameters::Signature.new({key: [:demo, "*Object.new"]})
+puts Marameters::Signature.new(key: [:demo, "*Object.new"])
 # demo: Object.new
 ----
 
@@ -382,7 +374,7 @@ When you put all of this together, you can dynamically build a method as follows
 
 [source,ruby]
 ----
-signature = Marameters::Signature.new({opt: [:text, "This is a test."]})
+signature = Marameters::Signature.new opt: [:text, "This is a test."]
 
 Example = Module.new do
   module_eval <<~DEFINITION, __FILE__, __LINE__ + 1
