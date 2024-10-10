@@ -3,8 +3,8 @@
 module Marameters
   # Builds a method's parameter signature.
   class Signature
-    def initialize parameters, builder: Builder.new
-      @parameters = parameters
+    def initialize *parameters, builder: Builder.new
+      @parameters = parameters.all?(Array) ? parameters : [parameters]
       @builder = builder
     end
 
@@ -17,7 +17,7 @@ module Marameters
     attr_reader :parameters, :builder
 
     def build
-      parameters.reduce [] do |signature, (kind, (name, default))|
+      parameters.reduce [] do |signature, (kind, name, default)|
         signature << builder.call(kind, name, default:)
       end
     end

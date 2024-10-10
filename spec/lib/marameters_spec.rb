@@ -55,20 +55,20 @@ RSpec.describe Marameters do
   end
 
   describe ".signature" do
-    let :parameters do
-      {
-        req: :one,
-        opt: [:two, 2],
-        rest: :three,
-        keyreq: :four,
-        key: [:five, 5],
-        keyrest: :six,
-        block: :seven
-      }
+    let :settings do
+      [
+        %i[req one],
+        [:opt, :two, 2],
+        %i[rest three],
+        %i[keyreq four],
+        [:key, :five, 5],
+        %i[keyrest six],
+        %i[block seven]
+      ]
     end
 
     it "answers parameters" do
-      expect(marameters.signature(parameters).to_s).to eq(
+      expect(marameters.signature(*settings).to_s).to eq(
         "one, two = 2, *three, four:, five: 5, **six, &seven"
       )
     end
