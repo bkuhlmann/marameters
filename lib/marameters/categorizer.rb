@@ -7,7 +7,7 @@ module Marameters
   class Categorizer
     using Refinements::Struct
 
-    def initialize parameters, model: Splat
+    def initialize parameters, model: Models::Forward
       @parameters = parameters
       @model = model
     end
