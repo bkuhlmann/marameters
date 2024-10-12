@@ -21,3 +21,6 @@ Metrics/ParameterLists:
 Metrics/PerceivedComplexity:
   Exclude:
     - "lib/marameters/categorizer.rb"
+Style/MissingElse:
+  Exclude:
+    - "lib/marameters/signature.rb"
