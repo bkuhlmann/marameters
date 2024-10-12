@@ -14,6 +14,14 @@ RSpec.describe Marameters::Signature do
   end
 
   shared_examples "a string" do |method|
+    context "with argument forwarding" do
+      subject(:signature) { described_class.new :all }
+
+      it "answers parameter" do
+        expect(signature.public_send(method)).to eq("...")
+      end
+    end
+
     context "with required positional" do
       let(:parameters) { [%i[req one]] }
 
@@ -55,7 +63,7 @@ RSpec.describe Marameters::Signature do
     end
 
     context "with bare single splat" do
-      let(:parameters) { [[:rest, nil]] }
+      let(:parameters) { [:rest] }
 
       it "answers parameter" do
         expect(signature.public_send(method)).to eq("*")
@@ -119,7 +127,7 @@ RSpec.describe Marameters::Signature do
     end
 
     context "with bare double splat" do
-      let(:parameters) { [[:keyrest, nil]] }
+      let(:parameters) { [:keyrest] }
 
       it "answers parameter" do
         expect(signature.public_send(method)).to eq("**")
@@ -135,7 +143,7 @@ RSpec.describe Marameters::Signature do
     end
 
     context "with bare block" do
-      let(:parameters) { [[:block, nil]] }
+      let(:parameters) { [:block] }
 
       it "answers parameter" do
         expect(signature.public_send(method)).to eq("&")
@@ -147,6 +155,14 @@ RSpec.describe Marameters::Signature do
 
       it "answers parameter" do
         expect(signature.public_send(method)).to eq("&seven")
+      end
+    end
+
+    context "with no parameters" do
+      subject(:signature) { described_class.new [] }
+
+      it "answers empty string" do
+        expect(signature.public_send(method)).to eq("")
       end
     end
 
