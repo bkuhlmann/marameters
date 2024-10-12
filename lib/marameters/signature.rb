@@ -3,19 +3,33 @@
 module Marameters
   # Builds a method's parameter signature.
   class Signature
-    def initialize *parameters, parser: RubyVM::AbstractSyntaxTree, builder: Signatures::Builder.new
+    CONTAINER = {
+      parser: RubyVM::AbstractSyntaxTree,
+      builder: Signatures::Builder.new,
+      merger: Signatures::Merger.new,
+      forwarder: Signatures::Forwarder
+    }.freeze
+
+    def initialize *parameters, container: CONTAINER
       @parameters = parameters.all?(Array) ? parameters : [parameters]
-      @parser = parser
-      @builder = builder
+
+      container.each { |key, value| instance_variable_set :"@#{key}", value }
     end
 
-    def to_s = build.join ", "
+    def super_for ancestor
+      merger.call(ancestor, parameters)
+            .then { |result| result - parameters }
+            .filter_map { |kind, name| forwarder.call kind, name }
+            .join ", "
+    end
+
+    def to_s = parameters == [[:all]] ? "..." : build.join(", ")
 
     alias to_str to_s
 
     private
 
-    attr_reader :parameters, :parser, :builder
+    attr_reader :parameters, :parser, :builder, :merger, :forwarder
 
     def build
       parameters.reduce [] do |signature, (kind, name, default)|

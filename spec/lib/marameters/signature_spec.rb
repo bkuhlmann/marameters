@@ -5,7 +5,111 @@ require "spec_helper"
 RSpec.describe Marameters::Signature do
   subject(:signature) { described_class.new(*parameters) }
 
+  describe "#super_for" do
+    context "with all kinds" do
+      let :ancestor do
+        [
+          %i[req one],
+          [:opt, :two, 2],
+          %i[rest three],
+          %i[keyreq four],
+          [:key, :five, 5],
+          %i[keyrest six],
+          %i[block seven]
+        ]
+      end
+
+      let :parameters do
+        [
+          %i[req alt_one],
+          [:opt, :alt_two, 2],
+          %i[rest alt_three],
+          %i[keyreq alt_four],
+          [:key, :alt_five, 5],
+          %i[keyrest alt_six],
+          %i[block alt_seven]
+        ]
+      end
+
+      it "forwards arguments" do
+        expect(signature.super_for(ancestor)).to eq("*, **, &")
+      end
+    end
+
+    context "with required positionals" do
+      let(:parameters) { %i[req two] }
+
+      it "forwards positional" do
+        expect(signature.super_for([%i[req one]])).to eq("one")
+      end
+    end
+
+    context "with optional positionals" do
+      let(:parameters) { [:opt, :two, 2] }
+
+      it "forwards positional" do
+        expect(signature.super_for([[:opt, :one, 2]])).to eq("one")
+      end
+    end
+
+    context "with single splat positionals" do
+      let(:parameters) { [:rest] }
+
+      it "answers empty string" do
+        expect(signature.super_for([%i[rest]])).to eq("")
+      end
+    end
+
+    context "with required keyword" do
+      let(:parameters) { %i[keyreq two] }
+
+      it "answers double splat" do
+        expect(signature.super_for([%i[keyreq one]])).to eq("**")
+      end
+    end
+
+    context "with optional keyword" do
+      let(:parameters) { %i[key two] }
+
+      it "answers double splat" do
+        expect(signature.super_for([%i[key one]])).to eq("**")
+      end
+    end
+
+    context "with double splat" do
+      let(:parameters) { [:keyrest] }
+
+      it "answers empty string" do
+        expect(signature.super_for([[:keyrest]])).to eq("")
+      end
+    end
+
+    context "with block" do
+      let(:parameters) { [:block] }
+
+      it "answers empty string" do
+        expect(signature.super_for([[:block]])).to eq("")
+      end
+    end
+
+    context "with no parameters" do
+      subject(:signature) { described_class.new }
+
+      it "answers empty string" do
+        expect(signature.super_for([])).to eq("")
+      end
+    end
+  end
+
   shared_examples "a string" do |method|
+    context "with argument forwarding" do
+      subject(:signature) { described_class.new :all }
+
+      it "answers parameter" do
+        expect(signature.public_send(method)).to eq("...")
+      end
+    end
+
     context "with required positional" do
       let(:parameters) { %i[req one] }
 
@@ -56,7 +160,7 @@ RSpec.describe Marameters::Signature do
     end
 
     context "with bare single splat" do
-      let(:parameters) { [:rest, nil] }
+      let(:parameters) { [:rest] }
 
       it "answers parameter" do
         expect(signature.public_send(method)).to eq("*")
@@ -129,7 +233,7 @@ RSpec.describe Marameters::Signature do
     end
 
     context "with bare double splat" do
-      let(:parameters) { [:keyrest, nil] }
+      let(:parameters) { [:keyrest] }
 
       it "answers parameter" do
         expect(signature.public_send(method)).to eq("**")
@@ -145,7 +249,7 @@ RSpec.describe Marameters::Signature do
     end
 
     context "with bare block" do
-      let(:parameters) { [:block, nil] }
+      let(:parameters) { [:block] }
 
       it "answers parameter" do
         expect(signature.public_send(method)).to eq("&")
@@ -157,6 +261,14 @@ RSpec.describe Marameters::Signature do
 
       it "answers parameter" do
         expect(signature.public_send(method)).to eq("&seven")
+      end
+    end
+
+    context "with no parameters" do
+      subject(:signature) { described_class.new }
+
+      it "answers empty string" do
+        expect(signature.public_send(method)).to eq("")
       end
     end
 
