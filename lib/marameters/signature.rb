@@ -9,7 +9,7 @@ module Marameters
       @builder = builder
     end
 
-    def to_s = build.join ", "
+    def to_s = parameters == :all ? "..." : build.join(", ")
 
     alias to_str to_s
 
