@@ -71,6 +71,8 @@ module Marameters
 
     def to_a = parameters
 
+    def to_h = parameters.each.with_object({}) { |(key, name), attributes| attributes[key] = name }
+
     private
 
     attr_reader :parameters

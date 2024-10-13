@@ -573,4 +573,30 @@ RSpec.describe Marameters::Probe do
       end
     end
   end
+
+  describe "#to_h" do
+    context "when parameters exist" do
+      let(:parameters) { comprehensive }
+
+      it "answers hash" do
+        expect(probe.to_h).to eq(
+          req: :one,
+          opt: :two,
+          keyreq: :four,
+          key: :five,
+          keyrest: :six,
+          rest: :three,
+          block: :seven
+        )
+      end
+    end
+
+    context "when parameters don't exist" do
+      let(:parameters) { none }
+
+      it "answers empty hash" do
+        expect(probe.to_h).to eq({})
+      end
+    end
+  end
 end
