@@ -139,6 +139,7 @@ probe.positionals?         # true
 probe.splats               # [:three, :six]
 probe.splats?              # true
 probe.to_a                 # [[:req, :one], [:opt, :two], [:rest, :three], [:keyreq, :four], [:key, :five], [:keyrest, :six], [:block, :seven]]
+probe.to_h                 # {req: :one, opt: :two, rest: :three, keyreq: :four, key: :five, keyrest: :six, block: :seven}
 ----
 
 In contrast the above, we can also probe the `#none` method which has no parameters for a completely
@@ -165,6 +166,7 @@ probe.positionals?         # false
 probe.splats               # []
 probe.splats?              # false
 probe.to_a                 # []
+probe.to_h                 # {}
 ----
 
 === Categorizer

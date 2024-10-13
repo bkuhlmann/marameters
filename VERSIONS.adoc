@@ -1,5 +1,13 @@
 = Versions
 
+== 3.9.0 (2024-10-13)
+
+* 🟢 Added probe hash conversion - Brooke Kuhlmann
+* 🟢 Added probe keyword for method - Brooke Kuhlmann
+* 🟢 Added probe keyword slice deprecation warning - Brooke Kuhlmann
+* 🔼 Updated to Zeitwerk 2.7.0 - Brooke Kuhlmann
+* 🔁 Refactored Defaulter as a lambda - Brooke Kuhlmann
+
 == 3.8.0 (2024-10-07)
 
 * 🔼 Updated to Refinements 12.9.0 - Brooke Kuhlmann
