@@ -102,6 +102,11 @@ RSpec.describe Marameters::Probe do
   describe "#keyword_slice" do
     let(:parameters) { comprehensive }
 
+    it "answers deprecation warning" do
+      expectation = proc { probe.keyword_slice({a: 1, four: 4}, keys: [:a]) }
+      expect(&expectation).to output(/is deprecated/).to_stderr
+    end
+
     it "answers method arguments and excludes non-method arguments" do
       expectation = probe.keyword_slice({a: 1, four: 4}, keys: [:a])
       expect(expectation).to eq({four: 4})

@@ -32,6 +32,9 @@ module Marameters
     def empty? = parameters.empty?
 
     def keyword_slice collection, keys:
+      warn "`#{self.class}##{__method__}` is deprecated, use `#keywords_for` instead.",
+           category: :deprecated
+
       keywords_for(*keys, **collection)
     end
 
