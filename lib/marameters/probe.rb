@@ -32,7 +32,11 @@ module Marameters
     def empty? = parameters.empty?
 
     def keyword_slice collection, keys:
-      collection.select { |key| !keys.include?(key) || keywords.include?(key) }
+      keywords_for(*keys, **collection)
+    end
+
+    def keywords_for(*keys, **attributes)
+      attributes.select { |key| !keys.include?(key) || keywords.include?(key) }
     end
 
     def keywords? = keywords.any?

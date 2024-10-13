@@ -154,6 +154,25 @@ RSpec.describe Marameters::Probe do
     end
   end
 
+  describe "#keywords_for" do
+    let(:parameters) { comprehensive }
+
+    it "answers method arguments and excludes non-method arguments" do
+      expectation = probe.keywords_for :a, a: 1, four: 4
+      expect(expectation).to eq({four: 4})
+    end
+
+    it "answers originals pairs when keys don't match" do
+      expectation = probe.keywords_for :x, :z, a: 1, b: 2
+      expect(expectation).to eq(a: 1, b: 2)
+    end
+
+    it "answers original pairs when keys match method arguments" do
+      expectation = probe.keywords_for :four, a: 1, four: 4
+      expect(expectation).to eq({a: 1, four: 4})
+    end
+  end
+
   describe "#kind?" do
     context "when parameters exist" do
       let(:parameters) { comprehensive }
