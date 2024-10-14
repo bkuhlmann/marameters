@@ -7,11 +7,7 @@ module Marameters
   class Probe
     extend Forwardable
 
-    CATEGORIES = {
-      positionals: %i[req opt],
-      keywords: %i[keyreq key],
-      splats: %i[rest keyrest]
-    }.freeze
+    CATEGORIES = {positionals: %i[req opt], keywords: %i[keyreq key]}.freeze
 
     def self.of klass, name, collection: []
       method = klass.instance_method name
@@ -24,7 +20,7 @@ module Marameters
 
     delegate %i[any? deconstruct empty? hash include? inspect to_a] => :parameters
 
-    attr_reader :keywords, :positionals, :splats
+    attr_reader :keywords, :positionals
 
     def initialize parameters, categories: CATEGORIES
       @parameters = parameters
@@ -38,22 +34,11 @@ module Marameters
 
     def <=>(other) = to_a <=> other.to_a
 
-    def block = parameters.find { |kind, name| break name if kind == :block }
-
-    def block? = (parameters in [*, [:block, *]])
-
-    def keyword_slice collection, keys:
-      warn "`#{self.class}##{__method__}` is deprecated, use `#keywords_for` instead.",
-           category: :deprecated
-
-      keywords_for(*keys, **collection)
-    end
+    def keywords? = keywords.any?
 
     def keywords_for(*keys, **attributes)
       attributes.select { |key| !keys.include?(key) || keywords.include?(key) }
     end
-
-    def keywords? = keywords.any?
 
     def kind?(value) = parameters.any? { |kind, _name| kind == value }
 
@@ -81,10 +66,6 @@ module Marameters
     def positionals_and_maybe_keywords?
       (positionals? && !keywords?) || (positionals? && keywords?)
     end
-
-    def splats? = splats.any?
-
-    def to_h = parameters.each.with_object({}) { |(key, name), attributes| attributes[key] = name }
 
     private
 
