@@ -33,54 +33,6 @@ RSpec.describe Marameters::Probe do
     end
   end
 
-  describe "#block" do
-    context "with only block" do
-      let :parameters do
-        Module.new { def test(&) = super }
-              .instance_method(:test)
-              .parameters
-      end
-
-      it "answers ampersand" do
-        expect(probe.block).to eq(:&)
-      end
-    end
-
-    context "with only named block" do
-      let(:parameters) { named }
-
-      it "answers name" do
-        expect(probe.block).to eq(:seven)
-      end
-    end
-
-    context "when parameters don't exist" do
-      let(:parameters) { none }
-
-      it "answers nil" do
-        expect(probe.block).to be(nil)
-      end
-    end
-  end
-
-  describe "#block?" do
-    context "when block exists" do
-      let(:parameters) { named }
-
-      it "answers true" do
-        expect(probe.block?).to be(true)
-      end
-    end
-
-    context "when block doesn't exist" do
-      let(:parameters) { none }
-
-      it "answers false" do
-        expect(probe.block?).to be(false)
-      end
-    end
-  end
-
   describe "#empty?" do
     context "when parameters exist" do
       let(:parameters) { named }
@@ -99,30 +51,6 @@ RSpec.describe Marameters::Probe do
     end
   end
 
-  describe "#keyword_slice" do
-    let(:parameters) { named }
-
-    it "answers deprecation warning" do
-      expectation = proc { probe.keyword_slice({a: 1, four: 4}, keys: [:a]) }
-      expect(&expectation).to output(/is deprecated/).to_stderr
-    end
-
-    it "answers method arguments and excludes non-method arguments" do
-      expectation = probe.keyword_slice({a: 1, four: 4}, keys: [:a])
-      expect(expectation).to eq({four: 4})
-    end
-
-    it "answers originals pairs when keys don't match" do
-      expectation = probe.keyword_slice({a: 1, b: 2}, keys: %i[x z])
-      expect(expectation).to eq(a: 1, b: 2)
-    end
-
-    it "answers original pairs when keys match method arguments" do
-      expectation = probe.keyword_slice({a: 1, four: 4}, keys: [:four])
-      expect(expectation).to eq({a: 1, four: 4})
-    end
-  end
-
   describe "#keywords" do
     context "when parameters exist" do
       let(:parameters) { named }
@@ -137,24 +65,6 @@ RSpec.describe Marameters::Probe do
 
       it "answers empty array" do
         expect(probe.keywords).to eq([])
-      end
-    end
-  end
-
-  describe "#keywords?" do
-    context "when parameters exist" do
-      let(:parameters) { named }
-
-      it "answers true" do
-        expect(probe.keywords?).to be(true)
-      end
-    end
-
-    context "when parameters don't exist" do
-      let(:parameters) { none }
-
-      it "answers false" do
-        expect(probe.keywords?).to be(false)
       end
     end
   end
@@ -516,60 +426,12 @@ RSpec.describe Marameters::Probe do
     end
   end
 
-  describe "#splats" do
-    context "with only bare splats" do
-      let :parameters do
-        Module.new { def test(*, **) = super }
-              .instance_method(:test)
-              .parameters
-      end
-
-      it "answers splats" do
-        expect(probe.splats).to eq(%i[* **])
-      end
-    end
-
-    context "when named parameters exist" do
-      let(:parameters) { named }
-
-      it "answers array of names" do
-        expect(probe.splats).to eq(%i[three six])
-      end
-    end
-
-    context "when parameters don't exist" do
-      let(:parameters) { none }
-
-      it "answers empty array" do
-        expect(probe.splats).to eq([])
-      end
-    end
-  end
-
-  describe "#splats?" do
-    context "when parameters exist" do
-      let(:parameters) { named }
-
-      it "answers true" do
-        expect(probe.splats?).to be(true)
-      end
-    end
-
-    context "when parameters don't exist" do
-      let(:parameters) { none }
-
-      it "answers false" do
-        expect(probe.splats?).to be(false)
-      end
-    end
-  end
-
-  describe "#to_a" do
+  shared_examples "an array" do |method|
     context "when parameters exist" do
       let(:parameters) { named }
 
       it "answers array" do
-        expect(probe.to_a).to eq(named_proof)
+        expect(probe.public_send(method)).to eq(named_proof)
       end
     end
 
@@ -577,34 +439,20 @@ RSpec.describe Marameters::Probe do
       let(:parameters) { none }
 
       it "answers empty array" do
-        expect(probe.to_a).to eq([])
+        expect(probe.public_send(method)).to eq([])
       end
     end
   end
 
-  describe "#to_h" do
-    context "when parameters exist" do
-      let(:parameters) { named }
+  describe "#deconstruct" do
+    it_behaves_like "an array", :deconstruct
+  end
 
-      it "answers hash" do
-        expect(probe.to_h).to eq(
-          req: :one,
-          opt: :two,
-          keyreq: :four,
-          key: :five,
-          keyrest: :six,
-          rest: :three,
-          block: :seven
-        )
-      end
-    end
+  describe "#to_a" do
+    it_behaves_like "an array", :to_a
+  end
 
-    context "when parameters don't exist" do
-      let(:parameters) { none }
-
-      it "answers empty hash" do
-        expect(probe.to_h).to eq({})
-      end
-    end
+  describe "#to_ary" do
+    it_behaves_like "an array", :to_ary
   end
 end

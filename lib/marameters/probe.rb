@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
+require "forwardable"
+
 module Marameters
   # Provides information on a method's parameters.
   class Probe
-    CATEGORIES = {
-      positionals: %i[req opt],
-      keywords: %i[keyreq key],
-      splats: %i[rest keyrest]
-    }.freeze
+    extend Forwardable
+
+    CATEGORIES = {positionals: %i[req opt], keywords: %i[keyreq key]}.freeze
 
     def self.of klass, name, collection: []
       method = klass.instance_method name
@@ -18,31 +18,18 @@ module Marameters
       collection
     end
 
-    attr_reader :keywords, :positionals, :splats
+    attr_reader :keywords, :positionals
+
+    delegate %i[deconstruct empty? to_a to_ary] => :parameters
 
     def initialize parameters, categories: CATEGORIES
       @parameters = parameters
       categories.each { |category, kinds| define_variable category, kinds }
     end
 
-    def block = parameters.find { |kind, name| break name if kind == :block }
-
-    def block? = (parameters in [*, [:block, *]])
-
-    def empty? = parameters.empty?
-
-    def keyword_slice collection, keys:
-      warn "`#{self.class}##{__method__}` is deprecated, use `#keywords_for` instead.",
-           category: :deprecated
-
-      keywords_for(*keys, **collection)
-    end
-
     def keywords_for(*keys, **attributes)
       attributes.select { |key| !keys.include?(key) || keywords.include?(key) }
     end
-
-    def keywords? = keywords.any?
 
     def kind?(value) = parameters.any? { |kind, _name| kind == value }
 
@@ -66,12 +53,6 @@ module Marameters
     def only_single_splats? = (parameters in [[:rest]] | [[:rest, *]])
 
     def positionals? = positionals.any?
-
-    def splats? = splats.any?
-
-    def to_a = parameters
-
-    def to_h = parameters.each.with_object({}) { |(key, name), attributes| attributes[key] = name }
 
     private
 
