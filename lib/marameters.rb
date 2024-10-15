@@ -10,6 +10,8 @@ end
 
 # Main namespace.
 module Marameters
+  KINDS = %i[req opt rest nokey keyreq key keyrest block].freeze
+
   def self.loader registry = Zeitwerk::Registry
     @loader ||= registry.loaders.find { |loader| loader.tag == File.basename(__FILE__, ".rb") }
   end
