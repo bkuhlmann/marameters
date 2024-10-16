@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe Marameters::Defaulter do
+RSpec.describe Marameters::Signatures::Defaulter do
   subject(:defaulter) { described_class }
 
   describe "#call" do

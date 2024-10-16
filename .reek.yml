@@ -5,7 +5,7 @@ exclude_paths:
 detectors:
   DuplicateMethodCall:
     exclude:
-      - "Marameters::Builder#call"
+      - "Marameters::Signatures::Builder#call"
       - "Marameters::Categorizer#filter"
   LongParameterList:
     enabled: false
@@ -17,7 +17,7 @@ detectors:
       - "Marameters::Probe"
   TooManyStatements:
     exclude:
-      - "Marameters::Builder#call"
+      - "Marameters::Signatures::Builder#call"
 
 directories:
   "spec/support/shared_contexts":

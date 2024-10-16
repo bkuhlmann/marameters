@@ -3,7 +3,7 @@
 module Marameters
   # Builds a method's parameter signature.
   class Signature
-    def initialize parameters, builder: Builder.new
+    def initialize parameters, builder: Signatures::Builder.new
       @parameters = parameters
       @builder = builder
       freeze

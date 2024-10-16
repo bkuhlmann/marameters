@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe Marameters::Builder do
+RSpec.describe Marameters::Signatures::Builder do
   subject(:builder) { described_class.new }
 
   describe "#initialize" do
