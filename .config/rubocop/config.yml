@@ -7,14 +7,17 @@ Lint/UselessMethodDefinition:
 Metrics/AbcSize:
   Exclude:
     - "lib/marameters/categorizer.rb"
+    - "lib/marameters/signatures/inheritor.rb"
 Metrics/CyclomaticComplexity:
   Exclude:
     - "lib/marameters/categorizer.rb"
     - "lib/marameters/signatures/builder.rb"
+    - "lib/marameters/signatures/inheritor.rb"
 Metrics/MethodLength:
   Exclude:
     - "lib/marameters/categorizer.rb"
     - "lib/marameters/signatures/builder.rb"
+    - "lib/marameters/signatures/inheritor.rb"
 Metrics/ParameterLists:
   Exclude:
     - "spec/support/shared_contexts/parameters.rb"
