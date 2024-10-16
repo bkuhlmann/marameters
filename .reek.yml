@@ -5,8 +5,12 @@ exclude_paths:
 detectors:
   DuplicateMethodCall:
     exclude:
-      - "Marameters::Signatures::Builder#call"
       - "Marameters::Categorizer#filter"
+      - "Marameters::Signatures::Builder#call"
+      - "Marameters::Signatures::Inheritor#merge"
+  FeatureEnvy:
+    exclude:
+      - "Marameters::Signatures::Inheritor#merge"
   LongParameterList:
     enabled: false
   RepeatedConditional:
@@ -18,6 +22,7 @@ detectors:
   TooManyStatements:
     exclude:
       - "Marameters::Signatures::Builder#call"
+      - "Marameters::Signatures::Inheritor#merge"
 
 directories:
   "spec/support/shared_contexts":
