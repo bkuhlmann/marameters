@@ -13,6 +13,7 @@ Metrics/CyclomaticComplexity:
     - "lib/marameters/categorizer.rb"
 Metrics/MethodLength:
   Exclude:
+    - "lib/marameters/builder.rb"
     - "lib/marameters/categorizer.rb"
 Metrics/ParameterLists:
   Exclude:

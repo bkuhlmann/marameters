@@ -7,11 +7,12 @@ module Marameters
       @defaulter = defaulter
     end
 
-    def call kind, name, default: nil
+    def call kind, name = nil, default: nil
       case kind
         when :req then name
         when :opt then "#{name} = #{defaulter.call default}"
         when :rest then "*#{name}"
+        when :nokey then "**nil"
         when :keyreq then "#{name}:"
         when :key then "#{name}: #{defaulter.call default}"
         when :keyrest then "**#{name}"

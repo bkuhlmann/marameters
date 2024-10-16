@@ -7,15 +7,15 @@ RSpec.describe Marameters::Builder do
 
   describe "#call" do
     it "answers required parameter" do
-      expect(builder.call(:req, :demo)).to eq(:demo)
+      expect(builder.call(:req, :test)).to eq(:test)
     end
 
     it "answers optional parameter with default" do
-      expect(builder.call(:opt, :demo)).to eq("demo = nil")
+      expect(builder.call(:opt, :test)).to eq("test = nil")
     end
 
     it "answers optional parameter with custom default" do
-      expect(builder.call(:opt, :demo, default: "test")).to eq(%(demo = "test"))
+      expect(builder.call(:opt, :test, default: "test")).to eq(%(test = "test"))
     end
 
     it "answers bare single splat" do
@@ -23,19 +23,23 @@ RSpec.describe Marameters::Builder do
     end
 
     it "answers named single splat" do
-      expect(builder.call(:rest, :demo)).to eq("*demo")
+      expect(builder.call(:rest, :test)).to eq("*test")
+    end
+
+    it "answers no keywords" do
+      expect(builder.call(:nokey)).to eq("**nil")
     end
 
     it "answers required keyword" do
-      expect(builder.call(:keyreq, :demo)).to eq("demo:")
+      expect(builder.call(:keyreq, :test)).to eq("test:")
     end
 
     it "answers optional keyword with default" do
-      expect(builder.call(:key, :demo)).to eq("demo: nil")
+      expect(builder.call(:key, :test)).to eq("test: nil")
     end
 
     it "answers optional keyword with custom default" do
-      expect(builder.call(:key, :demo, default: "test")).to eq(%(demo: "test"))
+      expect(builder.call(:key, :test, default: "test")).to eq(%(test: "test"))
     end
 
     it "answers bare double splat" do
@@ -43,7 +47,7 @@ RSpec.describe Marameters::Builder do
     end
 
     it "answers named double splat" do
-      expect(builder.call(:keyrest, :demo)).to eq("**demo")
+      expect(builder.call(:keyrest, :test)).to eq("**test")
     end
 
     it "answers bare block" do
@@ -51,7 +55,7 @@ RSpec.describe Marameters::Builder do
     end
 
     it "answers named block" do
-      expect(builder.call(:block, :demo)).to eq("&demo")
+      expect(builder.call(:block, :test)).to eq("&test")
     end
   end
 end
