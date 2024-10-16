@@ -26,6 +26,10 @@ RSpec.describe Marameters::Builder do
       expect(builder.call(:rest, :demo)).to eq("*demo")
     end
 
+    it "answers no keywords" do
+      expect(builder.call(:nokey)).to eq("**nil")
+    end
+
     it "answers required keyword" do
       expect(builder.call(:keyreq, :demo)).to eq("demo:")
     end
