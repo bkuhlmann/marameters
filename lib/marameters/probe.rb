@@ -3,12 +3,6 @@
 module Marameters
   # Provides information on a method's parameters.
   class Probe
-    CATEGORIES = {
-      positionals: %i[req opt],
-      keywords: %i[keyreq key],
-      splats: %i[rest keyrest]
-    }.freeze
-
     def self.of klass, name, collection: []
       method = klass.instance_method name
       collection << new(method.parameters)
@@ -18,11 +12,11 @@ module Marameters
       collection
     end
 
-    attr_reader :keywords, :positionals, :splats
+    attr_reader :positionals, :keywords, :keys, :splats, :forwards
 
     def initialize parameters, categories: CATEGORIES
       @parameters = parameters
-      categories.each { |category, kinds| define_variable category, kinds }
+      categories.to_h.each { |category, kinds| define_variable category, kinds }
     end
 
     def block = parameters.find { |kind, name| break name if kind == :block }

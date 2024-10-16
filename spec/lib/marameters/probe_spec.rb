@@ -123,6 +123,42 @@ RSpec.describe Marameters::Probe do
     end
   end
 
+  describe "#forwards" do
+    context "when parameters exist" do
+      let(:parameters) { comprehensive }
+
+      it "answers array of names" do
+        expect(probe.forwards).to eq(%i[three six seven])
+      end
+    end
+
+    context "when parameters don't exist" do
+      let(:parameters) { none }
+
+      it "answers empty array" do
+        expect(probe.forwards).to eq([])
+      end
+    end
+  end
+
+  describe "#keys" do
+    context "when parameters exist" do
+      let(:parameters) { comprehensive }
+
+      it "answers array of names" do
+        expect(probe.keys).to eq(%i[four five six])
+      end
+    end
+
+    context "when parameters don't exist" do
+      let(:parameters) { none }
+
+      it "answers empty array" do
+        expect(probe.keys).to eq([])
+      end
+    end
+  end
+
   describe "#keywords" do
     context "when parameters exist" do
       let(:parameters) { comprehensive }
