@@ -3,7 +3,7 @@
 module Marameters
   # Builds a method's parameter signature.
   class Signature
-    def initialize parameters, parser: RubyVM::AbstractSyntaxTree, builder: Builder.new
+    def initialize parameters, parser: RubyVM::AbstractSyntaxTree, builder: Signatures::Builder.new
       @parameters = parameters
       @parser = parser
       @builder = builder
