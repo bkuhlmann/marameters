@@ -9,12 +9,12 @@ Metrics/AbcSize:
     - "lib/marameters/categorizer.rb"
 Metrics/CyclomaticComplexity:
   Exclude:
-    - "lib/marameters/builder.rb"
     - "lib/marameters/categorizer.rb"
+    - "lib/marameters/signatures/builder.rb"
 Metrics/MethodLength:
   Exclude:
-    - "lib/marameters/builder.rb"
     - "lib/marameters/categorizer.rb"
+    - "lib/marameters/signatures/builder.rb"
 Metrics/ParameterLists:
   Exclude:
     - "spec/support/shared_contexts/parameters.rb"
