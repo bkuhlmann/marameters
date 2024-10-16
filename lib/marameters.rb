@@ -23,5 +23,7 @@ module Marameters
 
   def self.for(...) = Probe.new(...)
 
+  def self.signature_of(...) = Signature.of(...)
+
   def self.signature(...) = Signature.new(...)
 end

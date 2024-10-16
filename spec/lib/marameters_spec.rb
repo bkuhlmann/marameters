@@ -54,8 +54,18 @@ RSpec.describe Marameters do
     end
   end
 
+  describe ".signature_of" do
+    let(:parameters) { [%i[req one], [:opt, :two, 2]] }
+
+    it "answers parameters" do
+      expect(marameters.signature_of(comprehensive, parameters).to_s).to eq(
+        "one, two = 2, *, **, &"
+      )
+    end
+  end
+
   describe ".signature" do
-    let :settings do
+    let :parameters do
       [
         %i[req one],
         [:opt, :two, 2],
@@ -68,7 +78,7 @@ RSpec.describe Marameters do
     end
 
     it "answers parameters" do
-      expect(marameters.signature(*settings).to_s).to eq(
+      expect(marameters.signature(*parameters).to_s).to eq(
         "one, two = 2, *three, four:, five: 5, **six, &seven"
       )
     end
