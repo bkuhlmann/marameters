@@ -9,8 +9,8 @@ RSpec.describe Marameters::Probe do
 
   describe ".of" do
     it "answers parameters with no inheritance" do
-      parameters = described_class.of(test_module, :trial).flat_map(&:to_a)
-      expect(parameters).to eq(comprehensive_proof)
+      parameters = described_class.of(test_module, :named).flat_map(&:to_a)
+      expect(parameters).to eq(named_proof)
     end
 
     it "answers parameters defined via multiple inheritance" do
@@ -36,8 +36,8 @@ RSpec.describe Marameters::Probe do
   describe "#block" do
     context "with only block" do
       let :parameters do
-        Module.new { def trial(&) = super }
-              .instance_method(:trial)
+        Module.new { def test(&) = super }
+              .instance_method(:test)
               .parameters
       end
 
@@ -47,7 +47,7 @@ RSpec.describe Marameters::Probe do
     end
 
     context "with only named block" do
-      let(:parameters) { comprehensive }
+      let(:parameters) { named }
 
       it "answers name" do
         expect(probe.block).to eq(:seven)
@@ -65,7 +65,7 @@ RSpec.describe Marameters::Probe do
 
   describe "#block?" do
     context "when block exists" do
-      let(:parameters) { comprehensive }
+      let(:parameters) { named }
 
       it "answers true" do
         expect(probe.block?).to be(true)
@@ -83,7 +83,7 @@ RSpec.describe Marameters::Probe do
 
   describe "#empty?" do
     context "when parameters exist" do
-      let(:parameters) { comprehensive }
+      let(:parameters) { named }
 
       it "answers false" do
         expect(probe.empty?).to be(false)
@@ -100,7 +100,7 @@ RSpec.describe Marameters::Probe do
   end
 
   describe "#keyword_slice" do
-    let(:parameters) { comprehensive }
+    let(:parameters) { named }
 
     it "answers deprecation warning" do
       expectation = proc { probe.keyword_slice({a: 1, four: 4}, keys: [:a]) }
@@ -125,7 +125,7 @@ RSpec.describe Marameters::Probe do
 
   describe "#keywords" do
     context "when parameters exist" do
-      let(:parameters) { comprehensive }
+      let(:parameters) { named }
 
       it "answers array of names" do
         expect(probe.keywords).to eq(%i[four five])
@@ -143,7 +143,7 @@ RSpec.describe Marameters::Probe do
 
   describe "#keywords?" do
     context "when parameters exist" do
-      let(:parameters) { comprehensive }
+      let(:parameters) { named }
 
       it "answers true" do
         expect(probe.keywords?).to be(true)
@@ -160,7 +160,7 @@ RSpec.describe Marameters::Probe do
   end
 
   describe "#keywords_for" do
-    let(:parameters) { comprehensive }
+    let(:parameters) { named }
 
     it "answers method arguments and excludes non-method arguments" do
       expectation = probe.keywords_for :a, a: 1, four: 4
@@ -180,7 +180,7 @@ RSpec.describe Marameters::Probe do
 
   describe "#kind?" do
     context "when parameters exist" do
-      let(:parameters) { comprehensive }
+      let(:parameters) { named }
 
       it "answers true with match" do
         expect(probe.kind?(:req)).to be(true)
@@ -202,7 +202,7 @@ RSpec.describe Marameters::Probe do
 
   describe "#kinds" do
     context "when parameters exist" do
-      let(:parameters) { comprehensive }
+      let(:parameters) { named }
 
       it "answers kinds" do
         expect(probe.kinds).to eq(%i[req opt rest keyreq key keyrest block])
@@ -220,7 +220,7 @@ RSpec.describe Marameters::Probe do
 
   describe "#name?" do
     context "when parameters exist" do
-      let(:parameters) { comprehensive }
+      let(:parameters) { named }
 
       it "answers true with match" do
         expect(probe.name?(:one)).to be(true)
@@ -241,11 +241,19 @@ RSpec.describe Marameters::Probe do
   end
 
   describe "#names" do
-    context "when parameters exist" do
-      let(:parameters) { comprehensive }
+    context "with named parameters" do
+      let(:parameters) { named }
 
       it "answers names" do
         expect(probe.names).to eq(%i[one two three four five six seven])
+      end
+    end
+
+    context "with named and anonymous parameters" do
+      let(:parameters) { mixed }
+
+      it "answers names" do
+        expect(probe.names).to eq(%i[one two * four five ** &])
       end
     end
 
@@ -269,8 +277,8 @@ RSpec.describe Marameters::Probe do
 
     context "with only single splat" do
       let :parameters do
-        Module.new { def trial(*) = super }
-              .instance_method(:trial)
+        Module.new { def test(*) = super }
+              .instance_method(:test)
               .parameters
       end
 
@@ -281,8 +289,8 @@ RSpec.describe Marameters::Probe do
 
     context "with only single named splat" do
       let :parameters do
-        Module.new { def trial(*one) = super }
-              .instance_method(:trial)
+        Module.new { def test(*one) = super }
+              .instance_method(:test)
               .parameters
       end
 
@@ -293,8 +301,8 @@ RSpec.describe Marameters::Probe do
 
     context "with only double splat" do
       let :parameters do
-        Module.new { def trial(**) = super }
-              .instance_method(:trial)
+        Module.new { def test(**) = super }
+              .instance_method(:test)
               .parameters
       end
 
@@ -305,8 +313,8 @@ RSpec.describe Marameters::Probe do
 
     context "with only double named splat" do
       let :parameters do
-        Module.new { def trial(**one) = super }
-              .instance_method(:trial)
+        Module.new { def test(**one) = super }
+              .instance_method(:test)
               .parameters
       end
 
@@ -317,8 +325,8 @@ RSpec.describe Marameters::Probe do
 
     context "with only single and double bare splats" do
       let :parameters do
-        Module.new { def trial(*, **) = super }
-              .instance_method(:trial)
+        Module.new { def test(*, **) = super }
+              .instance_method(:test)
               .parameters
       end
 
@@ -329,8 +337,8 @@ RSpec.describe Marameters::Probe do
 
     context "with only single and double named splats" do
       let :parameters do
-        Module.new { def trial(*one, **two) = super }
-              .instance_method(:trial)
+        Module.new { def test(*one, **two) = super }
+              .instance_method(:test)
               .parameters
       end
 
@@ -351,8 +359,8 @@ RSpec.describe Marameters::Probe do
   describe "#only_double_splats?" do
     context "with only single splat" do
       let :parameters do
-        Module.new { def trial(*) = super }
-              .instance_method(:trial)
+        Module.new { def test(*) = super }
+              .instance_method(:test)
               .parameters
       end
 
@@ -363,8 +371,8 @@ RSpec.describe Marameters::Probe do
 
     context "with only double splat" do
       let :parameters do
-        Module.new { def trial(**) = super }
-              .instance_method(:trial)
+        Module.new { def test(**) = super }
+              .instance_method(:test)
               .parameters
       end
 
@@ -375,8 +383,8 @@ RSpec.describe Marameters::Probe do
 
     context "with only double named splat" do
       let :parameters do
-        Module.new { def trial(**one) = super }
-              .instance_method(:trial)
+        Module.new { def test(**one) = super }
+              .instance_method(:test)
               .parameters
       end
 
@@ -387,8 +395,8 @@ RSpec.describe Marameters::Probe do
 
     context "with only single and double splats" do
       let :parameters do
-        Module.new { def trial(*, **) = super }
-              .instance_method(:trial)
+        Module.new { def test(*, **) = super }
+              .instance_method(:test)
               .parameters
       end
 
@@ -417,8 +425,8 @@ RSpec.describe Marameters::Probe do
 
     context "with only single splat" do
       let :parameters do
-        Module.new { def trial(*) = super }
-              .instance_method(:trial)
+        Module.new { def test(*) = super }
+              .instance_method(:test)
               .parameters
       end
 
@@ -429,8 +437,8 @@ RSpec.describe Marameters::Probe do
 
     context "with only single named splat" do
       let :parameters do
-        Module.new { def trial(*one) = super }
-              .instance_method(:trial)
+        Module.new { def test(*one) = super }
+              .instance_method(:test)
               .parameters
       end
 
@@ -441,8 +449,8 @@ RSpec.describe Marameters::Probe do
 
     context "with only double splat" do
       let :parameters do
-        Module.new { def trial(**) = super }
-              .instance_method(:trial)
+        Module.new { def test(**) = super }
+              .instance_method(:test)
               .parameters
       end
 
@@ -453,8 +461,8 @@ RSpec.describe Marameters::Probe do
 
     context "with only single and double splats" do
       let :parameters do
-        Module.new { def trial(*, **) = super }
-              .instance_method(:trial)
+        Module.new { def test(*, **) = super }
+              .instance_method(:test)
               .parameters
       end
 
@@ -474,7 +482,7 @@ RSpec.describe Marameters::Probe do
 
   describe "#positionals" do
     context "when parameters exist" do
-      let(:parameters) { comprehensive }
+      let(:parameters) { named }
 
       it "answers array of names" do
         expect(probe.positionals).to eq(%i[one two])
@@ -492,7 +500,7 @@ RSpec.describe Marameters::Probe do
 
   describe "#positionals?" do
     context "when parameters exist" do
-      let(:parameters) { comprehensive }
+      let(:parameters) { named }
 
       it "answers true" do
         expect(probe.positionals?).to be(true)
@@ -511,8 +519,8 @@ RSpec.describe Marameters::Probe do
   describe "#splats" do
     context "with only bare splats" do
       let :parameters do
-        Module.new { def trial(*, **) = super }
-              .instance_method(:trial)
+        Module.new { def test(*, **) = super }
+              .instance_method(:test)
               .parameters
       end
 
@@ -522,7 +530,7 @@ RSpec.describe Marameters::Probe do
     end
 
     context "when named parameters exist" do
-      let(:parameters) { comprehensive }
+      let(:parameters) { named }
 
       it "answers array of names" do
         expect(probe.splats).to eq(%i[three six])
@@ -540,7 +548,7 @@ RSpec.describe Marameters::Probe do
 
   describe "#splats?" do
     context "when parameters exist" do
-      let(:parameters) { comprehensive }
+      let(:parameters) { named }
 
       it "answers true" do
         expect(probe.splats?).to be(true)
@@ -558,10 +566,10 @@ RSpec.describe Marameters::Probe do
 
   describe "#to_a" do
     context "when parameters exist" do
-      let(:parameters) { comprehensive }
+      let(:parameters) { named }
 
       it "answers array" do
-        expect(probe.to_a).to eq(comprehensive_proof)
+        expect(probe.to_a).to eq(named_proof)
       end
     end
 
@@ -576,7 +584,7 @@ RSpec.describe Marameters::Probe do
 
   describe "#to_h" do
     context "when parameters exist" do
-      let(:parameters) { comprehensive }
+      let(:parameters) { named }
 
       it "answers hash" do
         expect(probe.to_h).to eq(

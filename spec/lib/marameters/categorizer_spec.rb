@@ -3,7 +3,7 @@
 require "spec_helper"
 
 RSpec.describe Marameters::Categorizer do
-  subject(:categorizer) { described_class.new comprehensive }
+  subject(:categorizer) { described_class.new named }
 
   include_context "with parameters"
 
@@ -41,8 +41,8 @@ RSpec.describe Marameters::Categorizer do
     end
 
     it "answers maximum forwarded arguments" do
-      categorizer = Module.new { def trial(...) = super }
-                          .instance_method(:trial)
+      categorizer = Module.new { def test(...) = super }
+                          .instance_method(:test)
                           .parameters
                           .then { |parameters| described_class.new parameters }
 
@@ -56,8 +56,8 @@ RSpec.describe Marameters::Categorizer do
     end
 
     it "answers only forwarded positional arguments" do
-      categorizer = Module.new { def trial(...) = super }
-                          .instance_method(:trial)
+      categorizer = Module.new { def test(...) = super }
+                          .instance_method(:test)
                           .parameters
                           .then { |parameters| described_class.new parameters }
 
@@ -71,8 +71,8 @@ RSpec.describe Marameters::Categorizer do
     end
 
     it "answers only forwarded keyword arguments" do
-      categorizer = Module.new { def trial(...) = super }
-                          .instance_method(:trial)
+      categorizer = Module.new { def test(...) = super }
+                          .instance_method(:test)
                           .parameters
                           .then { |parameters| described_class.new parameters }
 
@@ -86,8 +86,8 @@ RSpec.describe Marameters::Categorizer do
     end
 
     it "answers only forwarded block argument" do
-      categorizer = Module.new { def trial(...) = super }
-                          .instance_method(:trial)
+      categorizer = Module.new { def test(...) = super }
+                          .instance_method(:test)
                           .parameters
                           .then { |parameters| described_class.new parameters }
 
@@ -101,8 +101,8 @@ RSpec.describe Marameters::Categorizer do
     end
 
     it "answers maximum bare splatted arguments" do
-      categorizer = Module.new { def trial(*, **, &) = super }
-                          .instance_method(:trial)
+      categorizer = Module.new { def test(*, **, &) = super }
+                          .instance_method(:test)
                           .parameters
                           .then { |parameters| described_class.new parameters }
 
@@ -116,8 +116,8 @@ RSpec.describe Marameters::Categorizer do
     end
 
     it "answers only bare splatted positional arguments" do
-      categorizer = Module.new { def trial(*, **, &) = super }
-                          .instance_method(:trial)
+      categorizer = Module.new { def test(*, **, &) = super }
+                          .instance_method(:test)
                           .parameters
                           .then { |parameters| described_class.new parameters }
 
@@ -131,8 +131,8 @@ RSpec.describe Marameters::Categorizer do
     end
 
     it "answers only bare splatted keyword arguments" do
-      categorizer = Module.new { def trial(*, **, &) = super }
-                          .instance_method(:trial)
+      categorizer = Module.new { def test(*, **, &) = super }
+                          .instance_method(:test)
                           .parameters
                           .then { |parameters| described_class.new parameters }
 
@@ -146,8 +146,8 @@ RSpec.describe Marameters::Categorizer do
     end
 
     it "answers maximum name splatted arguments" do
-      categorizer = Module.new { def trial(*one, **two, &block) = super one, two, yield(block) }
-                          .instance_method(:trial)
+      categorizer = Module.new { def test(*one, **two, &block) = super one, two, yield(block) }
+                          .instance_method(:test)
                           .parameters
                           .then { |parameters| described_class.new parameters }
 
@@ -161,8 +161,8 @@ RSpec.describe Marameters::Categorizer do
     end
 
     it "answers only name splatted positional arguments" do
-      categorizer = Module.new { def trial(*one, **two, &block) = super one, two, yield(block) }
-                          .instance_method(:trial)
+      categorizer = Module.new { def test(*one, **two, &block) = super one, two, yield(block) }
+                          .instance_method(:test)
                           .parameters
                           .then { |parameters| described_class.new parameters }
 
@@ -176,8 +176,8 @@ RSpec.describe Marameters::Categorizer do
     end
 
     it "answers only name splatted keyword arguments" do
-      categorizer = Module.new { def trial(*one, **two, &block) = super one, two, yield(block) }
-                          .instance_method(:trial)
+      categorizer = Module.new { def test(*one, **two, &block) = super one, two, yield(block) }
+                          .instance_method(:test)
                           .parameters
                           .then { |parameters| described_class.new parameters }
 
@@ -191,8 +191,8 @@ RSpec.describe Marameters::Categorizer do
     end
 
     it "answers hash argument for single splat parameter" do
-      categorizer = Module.new { def trial(*) = super }
-                          .instance_method(:trial)
+      categorizer = Module.new { def test(*) = super }
+                          .instance_method(:test)
                           .parameters
                           .then { |parameters| described_class.new parameters }
 
@@ -206,8 +206,8 @@ RSpec.describe Marameters::Categorizer do
     end
 
     it "answers hash argument for bare double splat parameter" do
-      categorizer = Module.new { def trial(**) = super }
-                          .instance_method(:trial)
+      categorizer = Module.new { def test(**) = super }
+                          .instance_method(:test)
                           .parameters
                           .then { |parameters| described_class.new parameters }
 
@@ -221,8 +221,8 @@ RSpec.describe Marameters::Categorizer do
     end
 
     it "answers empty keyword arguments for nokey parameter" do
-      categorizer = Module.new { def trial(**nil) = super }
-                          .instance_method(:trial)
+      categorizer = Module.new { def test(**nil) = super }
+                          .instance_method(:test)
                           .parameters
                           .then { |parameters| described_class.new parameters }
 
@@ -236,8 +236,8 @@ RSpec.describe Marameters::Categorizer do
     end
 
     it "answers arguments where keywords are empty for nokey parameter" do
-      categorizer = Module.new { def trial(one, **nil, &) = super }
-                          .instance_method(:trial)
+      categorizer = Module.new { def test(one, **nil, &) = super }
+                          .instance_method(:test)
                           .parameters
                           .then { |parameters| described_class.new parameters }
 
@@ -251,8 +251,8 @@ RSpec.describe Marameters::Categorizer do
     end
 
     it "answers block argument for anonymous block parameter" do
-      categorizer = Module.new { def trial(&) = super }
-                          .instance_method(:trial)
+      categorizer = Module.new { def test(&) = super }
+                          .instance_method(:test)
                           .parameters
                           .then { |parameters| described_class.new parameters }
 
@@ -264,8 +264,8 @@ RSpec.describe Marameters::Categorizer do
     end
 
     it "answers block argument for named block parameter" do
-      categorizer = Module.new { def trial(&block) = super yield(block) }
-                          .instance_method(:trial)
+      categorizer = Module.new { def test(&block) = super yield(block) }
+                          .instance_method(:test)
                           .parameters
                           .then { |parameters| described_class.new parameters }
 

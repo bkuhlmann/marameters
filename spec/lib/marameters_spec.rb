@@ -23,7 +23,7 @@ RSpec.describe Marameters do
       function = proc { "test" }
       arguments = [1, 2, [98, 99], {four: 4}, {five: 5}, {twenty: 20, thirty: 30}, function]
 
-      expect(marameters.categorize(comprehensive, arguments)).to have_attributes(
+      expect(marameters.categorize(named, arguments)).to have_attributes(
         positionals: [1, 2, 98, 99],
         keywords: {four: 4, five: 5, twenty: 20, thirty: 30},
         block: function
@@ -33,14 +33,14 @@ RSpec.describe Marameters do
 
   describe ".of" do
     it "answers parameters" do
-      parameters = marameters.of(test_module, :trial).flat_map(&:to_a)
-      expect(parameters).to eq(comprehensive_proof)
+      parameters = marameters.of(test_module, :named).flat_map(&:to_a)
+      expect(parameters).to eq(named_proof)
     end
   end
 
   describe ".for" do
     it "answers parameter details" do
-      expect(marameters.for(comprehensive).to_a).to eq(
+      expect(marameters.for(named).to_a).to eq(
         [
           %i[req one],
           %i[opt two],
