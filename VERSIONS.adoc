@@ -1,10 +1,17 @@
 = Versions
 
+== 3.11.0 (2024-10-27)
+
+* 🟢 Added probe deconstruction and inclusion support - Brooke Kuhlmann
+* 🟢 Added signature spec for no keywords - Brooke Kuhlmann
+* 🟢 Added version release notes - Brooke Kuhlmann
+* 🔼 Updated to Refinements 12.10.0 - Brooke Kuhlmann
+
 == 3.10.0 (2024-10-18)
 
-✅ Fixed builder to account for no keywords - Brooke Kuhlmann
-🟢 Added kinds constant - Brooke Kuhlmann
-🔁 Refactored RSpec shared context to use named and mixed parameters - Brooke Kuhlmann
+* ✅ Fixed builder to account for no keywords - Brooke Kuhlmann
+* 🟢 Added kinds constant - Brooke Kuhlmann
+* 🔁 Refactored RSpec shared context to use named and mixed parameters - Brooke Kuhlmann
 
 == 3.9.0 (2024-10-13)
 
