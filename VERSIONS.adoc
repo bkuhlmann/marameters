@@ -2,9 +2,9 @@
 
 == 3.10.0 (2024-10-18)
 
-✅ Fixed builder to account for no keywords - Brooke Kuhlmann
-🟢 Added kinds constant - Brooke Kuhlmann
-🔁 Refactored RSpec shared context to use named and mixed parameters - Brooke Kuhlmann
+* ✅ Fixed builder to account for no keywords - Brooke Kuhlmann
+* 🟢 Added kinds constant - Brooke Kuhlmann
+* 🔁 Refactored RSpec shared context to use named and mixed parameters - Brooke Kuhlmann
 
 == 3.9.0 (2024-10-13)
 
