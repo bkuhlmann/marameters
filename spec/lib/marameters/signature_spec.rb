@@ -62,6 +62,14 @@ RSpec.describe Marameters::Signature do
       end
     end
 
+    context "with no keywords" do
+      let(:parameters) { [:nokey] }
+
+      it "answers parameter" do
+        expect(signature.public_send(method)).to eq("**nil")
+      end
+    end
+
     context "with required keyword" do
       let(:parameters) { {keyreq: :four} }
 
