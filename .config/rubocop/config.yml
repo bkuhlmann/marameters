@@ -8,19 +8,23 @@ Metrics/AbcSize:
   Exclude:
     - "lib/marameters/categorizer.rb"
     - "lib/marameters/signatures/inheritor.rb"
+    - "lib/marameters/signatures/super.rb"
 Metrics/CyclomaticComplexity:
   Exclude:
     - "lib/marameters/categorizer.rb"
     - "lib/marameters/signatures/builder.rb"
     - "lib/marameters/signatures/inheritor.rb"
+    - "lib/marameters/signatures/super.rb"
 Metrics/MethodLength:
   Exclude:
     - "lib/marameters/categorizer.rb"
     - "lib/marameters/signatures/builder.rb"
     - "lib/marameters/signatures/inheritor.rb"
+    - "lib/marameters/signatures/super.rb"
 Metrics/ParameterLists:
   Exclude:
     - "spec/support/shared_contexts/parameters.rb"
 Metrics/PerceivedComplexity:
   Exclude:
     - "lib/marameters/categorizer.rb"
+    - "lib/marameters/signatures/super.rb"
