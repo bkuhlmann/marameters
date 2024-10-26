@@ -8,11 +8,16 @@ detectors:
       - "Marameters::Categorizer#filter"
       - "Marameters::Signatures::Builder#call"
       - "Marameters::Signatures::Inheritor#merge"
+      - "Marameters::Signatures::Super#merge"
   FeatureEnvy:
     exclude:
       - "Marameters::Signatures::Inheritor#merge"
+      - "Marameters::Signatures::Super#merge"
   LongParameterList:
     enabled: false
+  NestedIterators:
+    exclude:
+      - "Marameters::Signatures::Super#merge"
   RepeatedConditional:
     exclude:
       - "Marameters::Categorizer"
@@ -23,6 +28,7 @@ detectors:
     exclude:
       - "Marameters::Signatures::Builder#call"
       - "Marameters::Signatures::Inheritor#merge"
+      - "Marameters::Signatures::Super#merge"
 
 directories:
   "spec/support/shared_contexts":
