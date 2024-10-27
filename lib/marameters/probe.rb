@@ -1,8 +1,12 @@
 # frozen_string_literal: true
 
+require "forwardable"
+
 module Marameters
   # Provides information on a method's parameters.
   class Probe
+    extend Forwardable
+
     CATEGORIES = {
       positionals: %i[req opt],
       keywords: %i[keyreq key],
@@ -18,6 +22,8 @@ module Marameters
       collection
     end
 
+    delegate %i[deconstruct empty? include? to_a] => :parameters
+
     attr_reader :keywords, :positionals, :splats
 
     def initialize parameters, categories: CATEGORIES
@@ -28,8 +34,6 @@ module Marameters
     def block = parameters.find { |kind, name| break name if kind == :block }
 
     def block? = (parameters in [*, [:block, *]])
-
-    def empty? = parameters.empty?
 
     def keyword_slice collection, keys:
       warn "`#{self.class}##{__method__}` is deprecated, use `#keywords_for` instead.",
@@ -68,8 +72,6 @@ module Marameters
     def positionals? = positionals.any?
 
     def splats? = splats.any?
-
-    def to_a = parameters
 
     def to_h = parameters.each.with_object({}) { |(key, name), attributes| attributes[key] = name }
 

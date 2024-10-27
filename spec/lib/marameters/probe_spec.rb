@@ -99,6 +99,18 @@ RSpec.describe Marameters::Probe do
     end
   end
 
+  describe "#include?" do
+    let(:parameters) { named }
+
+    it "answers true when parameter exists" do
+      expect(probe.include?(%i[req one])).to be(true)
+    end
+
+    it "answers false when parameter doesn't exist" do
+      expect(probe.include?(%i[req test])).to be(false)
+    end
+  end
+
   describe "#keyword_slice" do
     let(:parameters) { named }
 
@@ -564,12 +576,12 @@ RSpec.describe Marameters::Probe do
     end
   end
 
-  describe "#to_a" do
+  shared_examples "an array" do |method|
     context "when parameters exist" do
       let(:parameters) { named }
 
       it "answers array" do
-        expect(probe.to_a).to eq(named_proof)
+        expect(probe.public_send(method)).to eq(named_proof)
       end
     end
 
@@ -577,9 +589,17 @@ RSpec.describe Marameters::Probe do
       let(:parameters) { none }
 
       it "answers empty array" do
-        expect(probe.to_a).to eq([])
+        expect(probe.public_send(method)).to eq([])
       end
     end
+  end
+
+  describe "#deconstruct" do
+    it_behaves_like "an array", :deconstruct
+  end
+
+  describe "#to_a" do
+    it_behaves_like "an array", :to_a
   end
 
   describe "#to_h" do
