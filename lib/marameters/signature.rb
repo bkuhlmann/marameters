@@ -7,6 +7,7 @@ module Marameters
       @parameters = parameters
       @parser = parser
       @builder = builder
+      freeze
     end
 
     def to_s = parameters == :all ? "..." : build.join(", ")

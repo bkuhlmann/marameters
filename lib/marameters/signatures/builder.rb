@@ -6,6 +6,7 @@ module Marameters
     class Builder
       def initialize defaulter: Defaulter
         @defaulter = defaulter
+        freeze
       end
 
       def call kind, name = nil, default: nil
