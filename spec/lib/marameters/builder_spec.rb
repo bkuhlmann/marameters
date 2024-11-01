@@ -5,6 +5,12 @@ require "spec_helper"
 RSpec.describe Marameters::Builder do
   subject(:builder) { described_class.new }
 
+  describe "#initialize" do
+    it "is frozen" do
+      expect(builder.frozen?).to be(true)
+    end
+  end
+
   describe "#call" do
     it "answers required parameter" do
       expect(builder.call(:req, :test)).to eq(:test)

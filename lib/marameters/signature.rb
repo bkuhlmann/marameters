@@ -6,6 +6,7 @@ module Marameters
     def initialize parameters, builder: Builder.new
       @parameters = parameters
       @builder = builder
+      freeze
     end
 
     def to_s = build.join ", "

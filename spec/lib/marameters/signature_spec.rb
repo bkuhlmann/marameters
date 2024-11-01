@@ -5,6 +5,14 @@ require "spec_helper"
 RSpec.describe Marameters::Signature do
   subject(:signature) { described_class.new parameters }
 
+  describe "#initialize" do
+    let(:parameters) { [[:req]] }
+
+    it "is frozen" do
+      expect(signature.frozen?).to be(true)
+    end
+  end
+
   shared_examples "a string" do |method|
     context "with required positional" do
       let(:parameters) { {req: :one} }
