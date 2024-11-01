@@ -33,6 +33,14 @@ RSpec.describe Marameters::Probe do
     end
   end
 
+  describe "#initialize" do
+    let(:parameters) { none }
+
+    it "is frozen" do
+      expect(probe.frozen?).to be(true)
+    end
+  end
+
   describe "#block" do
     context "with only block" do
       let :parameters do
@@ -81,6 +89,64 @@ RSpec.describe Marameters::Probe do
     end
   end
 
+  describe "#<=>" do
+    let(:first) { described_class.new named }
+    let(:second) { described_class.new none }
+
+    it "answers one when greater than" do
+      expect(first <=> second).to eq(1)
+    end
+
+    it "answers negative one when less than" do
+      expect(second <=> first).to eq(-1)
+    end
+
+    it "ansers zero when identical" do
+      similar = described_class.new named
+      expect(first <=> similar).to eq(0)
+    end
+  end
+
+  shared_examples "an equal" do |method|
+    let(:first) { described_class.new named }
+    let(:second) { described_class.new none }
+
+    it "answers true when equal" do
+      similar = described_class.new named
+      expect(first.public_send(method, similar)).to be(true)
+    end
+
+    it "answers false when not equal" do
+      expect(first.public_send(method, second)).to be(false)
+    end
+  end
+
+  describe "#==" do
+    it_behaves_like "an equal", :==
+  end
+
+  describe "#eql?" do
+    it_behaves_like "an equal", :eql?
+  end
+
+  describe "#any?" do
+    context "when parameters exist" do
+      let(:parameters) { named }
+
+      it "answers true" do
+        expect(probe.any?).to be(true)
+      end
+    end
+
+    context "when parameters don't exist" do
+      let(:parameters) { none }
+
+      it "answers false" do
+        expect(probe.any?).to be(false)
+      end
+    end
+  end
+
   describe "#empty?" do
     context "when parameters exist" do
       let(:parameters) { named }
@@ -99,6 +165,14 @@ RSpec.describe Marameters::Probe do
     end
   end
 
+  describe "#hash" do
+    let(:parameters) { named }
+
+    it "answers parameters' hash" do
+      expect(probe.hash).to eq(named.hash)
+    end
+  end
+
   describe "#include?" do
     let(:parameters) { named }
 
@@ -108,6 +182,14 @@ RSpec.describe Marameters::Probe do
 
     it "answers false when parameter doesn't exist" do
       expect(probe.include?(%i[req test])).to be(false)
+    end
+  end
+
+  describe "#inspect" do
+    let(:parameters) { [%i[req test]] }
+
+    it "answers parameters array as a string" do
+      expect(probe.inspect).to eq(parameters.to_s)
     end
   end
 
@@ -359,6 +441,30 @@ RSpec.describe Marameters::Probe do
       end
     end
 
+    context "with splats and positionals" do
+      let :parameters do
+        Module.new { def test(one, *, **) = super }
+              .instance_method(:test)
+              .parameters
+      end
+
+      it "answers false" do
+        expect(probe.only_bare_splats?).to be(false)
+      end
+    end
+
+    context "with splats and keywords" do
+      let :parameters do
+        Module.new { def test(*, one:, **) = super }
+              .instance_method(:test)
+              .parameters
+      end
+
+      it "answers false" do
+        expect(probe.only_bare_splats?).to be(false)
+      end
+    end
+
     context "with no parameterss" do
       let(:parameters) { none }
 
@@ -408,6 +514,30 @@ RSpec.describe Marameters::Probe do
     context "with only single and double splats" do
       let :parameters do
         Module.new { def test(*, **) = super }
+              .instance_method(:test)
+              .parameters
+      end
+
+      it "answers false" do
+        expect(probe.only_double_splats?).to be(false)
+      end
+    end
+
+    context "with double splat and positionals" do
+      let :parameters do
+        Module.new { def test(one, two = 2, **) = super }
+              .instance_method(:test)
+              .parameters
+      end
+
+      it "answers false" do
+        expect(probe.only_double_splats?).to be(false)
+      end
+    end
+
+    context "with double splat and keywords" do
+      let :parameters do
+        Module.new { def test(one:, two: 2, **) = super }
               .instance_method(:test)
               .parameters
       end
@@ -483,6 +613,30 @@ RSpec.describe Marameters::Probe do
       end
     end
 
+    context "with single splat and positionals" do
+      let :parameters do
+        Module.new { def test(one, two = 2, *) = super }
+              .instance_method(:test)
+              .parameters
+      end
+
+      it "answers false" do
+        expect(probe.only_single_splats?).to be(false)
+      end
+    end
+
+    context "with single splat and keywords" do
+      let :parameters do
+        Module.new { def test(*, one:, two: 2) = super }
+              .instance_method(:test)
+              .parameters
+      end
+
+      it "answers false" do
+        expect(probe.only_single_splats?).to be(false)
+      end
+    end
+
     context "with no parameterss" do
       let(:parameters) { none }
 
@@ -524,6 +678,100 @@ RSpec.describe Marameters::Probe do
 
       it "answers false" do
         expect(probe.positionals?).to be(false)
+      end
+    end
+  end
+
+  describe "#positionals_and_maybe_keywords?" do
+    context "with required positional" do
+      let :parameters do
+        Module.new { def test(one) = super }
+              .instance_method(:test)
+              .parameters
+      end
+
+      it "answers true" do
+        expect(probe.positionals_and_maybe_keywords?).to be(true)
+      end
+    end
+
+    context "with optional positional" do
+      let :parameters do
+        Module.new { def test(one = 1) = super }
+              .instance_method(:test)
+              .parameters
+      end
+
+      it "answers true" do
+        expect(probe.positionals_and_maybe_keywords?).to be(true)
+      end
+    end
+
+    context "with required and optional positionals" do
+      let :parameters do
+        Module.new { def test(one, two = 2) = super }
+              .instance_method(:test)
+              .parameters
+      end
+
+      it "answers true" do
+        expect(probe.positionals_and_maybe_keywords?).to be(true)
+      end
+    end
+
+    context "with positionals and required keyword" do
+      let :parameters do
+        Module.new { def test(one, two = 2, three:) = super }
+              .instance_method(:test)
+              .parameters
+      end
+
+      it "answers true" do
+        expect(probe.positionals_and_maybe_keywords?).to be(true)
+      end
+    end
+
+    context "with positionals and optional keyword" do
+      let :parameters do
+        Module.new { def test(one, two = 2, three: 3) = super }
+              .instance_method(:test)
+              .parameters
+      end
+
+      it "answers true" do
+        expect(probe.positionals_and_maybe_keywords?).to be(true)
+      end
+    end
+
+    context "with positionals and double splat" do
+      let :parameters do
+        Module.new { def test(one, two = 2, **) = super }
+              .instance_method(:test)
+              .parameters
+      end
+
+      it "answers true" do
+        expect(probe.positionals_and_maybe_keywords?).to be(true)
+      end
+    end
+
+    context "with positionals and block" do
+      let :parameters do
+        Module.new { def test(one, two = 2, &) = super }
+              .instance_method(:test)
+              .parameters
+      end
+
+      it "answers true" do
+        expect(probe.positionals_and_maybe_keywords?).to be(true)
+      end
+    end
+
+    context "with no parameterss" do
+      let(:parameters) { none }
+
+      it "answers false" do
+        expect(probe.positionals_and_maybe_keywords?).to be(false)
       end
     end
   end

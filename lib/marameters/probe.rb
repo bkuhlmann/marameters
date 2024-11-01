@@ -22,14 +22,21 @@ module Marameters
       collection
     end
 
-    delegate %i[deconstruct empty? include? to_a] => :parameters
+    delegate %i[any? deconstruct empty? hash include? inspect to_a] => :parameters
 
     attr_reader :keywords, :positionals, :splats
 
     def initialize parameters, categories: CATEGORIES
       @parameters = parameters
       categories.each { |category, kinds| define_variable category, kinds }
+      freeze
     end
+
+    def ==(other) = hash == other.hash
+
+    alias eql? ==
+
+    def <=>(other) = to_a <=> other.to_a
 
     def block = parameters.find { |kind, name| break name if kind == :block }
 
@@ -58,10 +65,10 @@ module Marameters
 
     def only_bare_splats?
       parameters in [[:rest]] \
-                    | [[:keyrest]] \
-                    | [[:rest], [:keyrest]] \
                     | [[:rest, :*]] \
+                    | [[:keyrest]] \
                     | [[:keyrest, :**]] \
+                    | [[:rest], [:keyrest]] \
                     | [[:rest, :*], [:keyrest, :**]]
     end
 
@@ -70,6 +77,10 @@ module Marameters
     def only_single_splats? = (parameters in [[:rest]] | [[:rest, *]])
 
     def positionals? = positionals.any?
+
+    def positionals_and_maybe_keywords?
+      (positionals? && !keywords?) || (positionals? && keywords?)
+    end
 
     def splats? = splats.any?
 
