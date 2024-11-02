@@ -16,7 +16,7 @@ module Marameters
     @loader ||= registry.loaders.find { |loader| loader.tag == File.basename(__FILE__, ".rb") }
   end
 
-  def self.categorize(parameters, arguments) = Categorizer.new(parameters).call(arguments)
+  def self.categorize(parameters, arguments) = Categorizer.new.call parameters, arguments
 
   def self.of(...) = Probe.of(...)
 
