@@ -1,5 +1,11 @@
 = Versions
 
+== 4.0.1 (2024-12-28)
+
+* ✅ Fixed categorize method to memoize instance - Brooke Kuhlmann
+* ✅ Fixed categorizer automatic array casting - Brooke Kuhlmann
+* 🔼 Updated to Git Lint 9.0.0 - Brooke Kuhlmann
+
 == 4.0.0 (2024-12-27)
 
 * ✅ Fixed objects to be frozen by default - Brooke Kuhlmann
