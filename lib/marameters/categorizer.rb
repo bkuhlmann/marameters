@@ -9,10 +9,7 @@ module Marameters
 
     def call parameters, arguments
       @record = model.new
-
-      return record if arguments.empty?
-
-      map parameters, arguments
+      map parameters, arguments.is_a?(Array) ? arguments : [arguments]
     end
 
     private

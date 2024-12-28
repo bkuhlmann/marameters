@@ -25,8 +25,8 @@ RSpec.describe Marameters::Categorizer do
       )
     end
 
-    it "casts an argument as an array if not already an array" do
-      expect(categorizer.call(named, [1])).to have_attributes(
+    it "casts argument as array if not an array" do
+      expect(categorizer.call(named, 1)).to have_attributes(
         positionals: [1], keywords: {}, block: nil
       )
     end
@@ -177,6 +177,28 @@ RSpec.describe Marameters::Categorizer do
       expect(categorizer.call(parameters, arguments)).to have_attributes(
         positionals: [],
         keywords: {four: 4, five: 5, twenty: 20},
+        block: nil
+      )
+    end
+
+    it "answers single array argument for unnamed rest parameter" do
+      data = Data.define :one, :two
+      parameters = data.method(:new).parameters
+
+      expect(categorizer.call(parameters, [[1, 2]])).to have_attributes(
+        positionals: [1, 2],
+        keywords: {},
+        block: nil
+      )
+    end
+
+    it "answers single hash argument for unnamed rest parameter" do
+      data = Data.define :one, :two
+      parameters = data.method(:new).parameters
+
+      expect(categorizer.call(parameters, [{one: 1, two: 2}])).to have_attributes(
+        positionals: [{one: 1, two: 2}],
+        keywords: {},
         block: nil
       )
     end
