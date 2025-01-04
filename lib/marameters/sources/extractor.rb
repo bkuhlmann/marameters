@@ -5,8 +5,6 @@ module Marameters
     # Extracts the literal source of a Proc's body.
     class Extractor
       PATTERN = /
-        proc          # Proc statement.
-        \s*           # Optional space.
         \{            # Block open.
         (?<body>.*?)  # Source code body.
         \}            # Block close.
@@ -15,19 +13,16 @@ module Marameters
       def initialize pattern: PATTERN, reader: Reader.new
         @pattern = pattern
         @reader = reader
-        @fallback = "nil"
         freeze
       end
 
       def call function
-        reader.call(function).then do |line|
-          line.match?(pattern) ? line.match(pattern)[:body].strip : fallback
-        end
+        reader.call(function).then { |line| line.match(pattern)[:body].strip }
       end
 
       private
 
-      attr_reader :pattern, :reader, :fallback
+      attr_reader :pattern, :reader
     end
   end
 end

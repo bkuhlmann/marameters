@@ -11,34 +11,31 @@ module Marameters
         freeze
       end
 
-      def call object
-        instructions = parser.of object
-
-        fail StandardError, "Unable to load source for: #{object.inspect}." unless instructions
-
-        process object, instructions
-      end
+      def call(object) = build_body_from source_location_of(object)
 
       private
 
       attr_reader :offset, :parser, :io
 
-      def process object, instructions
-        lines = instructions.script_lines
+      # :reek:FeatureEnvy
+      # rubocop:disable Style/MethodCallWithArgsParentheses
+      def build_body_from location
+        path, line_start, column_start, line_end, column_end = location
+        lines = io.read(path).lines[(line_start - offset)..(line_end - offset)]
 
-        return lines.first if lines
-        return extract(*object.source_location) if io.readable? instructions.absolute_path
-
-        fail StandardError, "Unable to load source for: #{object.inspect}."
+        lines[-1] = lines[-1].byteslice(...column_end)
+        lines[0] = lines[0].byteslice(column_start..)
+        lines.join
       end
+      # rubocop:enable Style/MethodCallWithArgsParentheses
 
-      def extract(path, line_number) = io.open(path) { |body| pluck body, line_number }
+      def source_location_of object
+        instructions = parser.of object
+        path = instructions && instructions.absolute_path
 
-      def pluck body, line_number
-        body.each_line
-            .with_index
-            .find { |_line, index| index + offset == line_number }
-            .first
+        return [path, *instructions.to_a.dig(4, :code_location)] if path
+
+        fail StandardError, "Unable to find source for: #{object.inspect}."
       end
     end
   end
