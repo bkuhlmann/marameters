@@ -5,6 +5,9 @@ module Marameters
     # Reads object source code from memory or file (assumes implementation is a one-liner).
     class Reader
       def initialize offset: 1, parser: RubyVM::InstructionSequence, io: File
+        warn "`#{self.class}` is deprecated, use `Sourcers::Readers::Any` instead.",
+             category: :deprecated
+
         @offset = offset
         @parser = parser
         @io = io

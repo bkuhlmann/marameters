@@ -13,6 +13,9 @@ module Marameters
       /x
 
       def initialize pattern: PATTERN, reader: Reader.new
+        warn "`#{self.class}` is deprecated, use `Sourcers::Function` instead.",
+             category: :deprecated
+
         @pattern = pattern
         @reader = reader
         @fallback = "nil"
