@@ -3,7 +3,7 @@
 module Marameters
   module Signatures
     # Computes a method parameter's default value.
-    Defaulter = lambda do |value, extractor: Sources::Extractor.new|
+    Defaulter = lambda do |value, extractor: Sourcers::Function.new|
       case value
         when Proc
           fail TypeError, "Use procs instead of lambdas for defaults." if value.lambda?
