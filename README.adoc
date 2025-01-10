@@ -449,7 +449,6 @@ puts Marameters.signature([[:key, :demo, :test]])
 # With proc (no parameters).
 puts Marameters.signature([[:key, :demo, proc { Object.new }]])
 # "demo: Object.new"
-# ⚠️ The above will answer "demo: nil" if used in IRB since the source can't be found.
 
 # With proc (with parameters).
 puts Marameters.signature([[:key, :demo, proc { |no| no }]])

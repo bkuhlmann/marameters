@@ -1,5 +1,16 @@
 = Versions
 
+== 4.1.0 (2025-01-10)
+
+* 🟢 Added any source reader - Brooke Kuhlmann
+* 🟢 Added deprecation warnings to sources objects - Brooke Kuhlmann
+* 🟢 Added disk source reader - Brooke Kuhlmann
+* 🟢 Added function sourcer - Brooke Kuhlmann
+* 🟢 Added memory source reader - Brooke Kuhlmann
+* 🔼 Updated signature defaulter to use function sourcer - Brooke Kuhlmann
+* 🔼 Updated to Amazing Print 1.7.0 - Brooke Kuhlmann
+* 🔼 Updated to Debug 1.10.0 - Brooke Kuhlmann
+
 == 4.0.1 (2024-12-28)
 
 * ✅ Fixed categorize method to memoize instance - Brooke Kuhlmann
