@@ -34,7 +34,7 @@ module Marameters
               elsif ancestor.name? name then all[key] = parameter
               else all
               end
-            when :nokey then all.delete_if { |key, _| %i[keyreq key keyrest].include? key }
+            when :nokey then all.delete_if { |nokey, _| %i[keyreq key keyrest].include? nokey }
             when :keyreq, :key
               included = ancestor.name?(name) && descendant.name?(name)
               different = ancestor.keywords? && ancestor.keywords.sort != descendant.keywords.sort
