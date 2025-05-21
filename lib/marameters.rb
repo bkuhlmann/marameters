@@ -13,7 +13,7 @@ module Marameters
   KINDS = %i[req opt rest nokey keyreq key keyrest block].freeze
 
   def self.loader registry = Zeitwerk::Registry
-    @loader ||= registry.loaders.find { |loader| loader.tag == File.basename(__FILE__, ".rb") }
+    @loader ||= registry.loaders.each.find { |loader| loader.tag == File.basename(__FILE__, ".rb") }
   end
 
   def self.categorize parameters, arguments
