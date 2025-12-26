@@ -30,12 +30,16 @@ RSpec.describe Marameters::Signatures::Defaulter do
       )
     end
 
-    it "answers string as string" do
-      expect(defaulter.call("test")).to eq(%("test"))
+    it "answers regular expression as string" do
+      expect(defaulter.call(/[0-9]/)).to eq("/[0-9]/")
     end
 
     it "answers symbol as string" do
       expect(defaulter.call(:test)).to eq(":test")
+    end
+
+    it "answers string as string" do
+      expect(defaulter.call("test")).to eq(%("test"))
     end
 
     it "answers nil as string" do
