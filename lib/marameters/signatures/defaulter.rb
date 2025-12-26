@@ -10,8 +10,8 @@ module Marameters
           fail ArgumentError, "Avoid using parameters for proc defaults." if value.arity.nonzero?
 
           extractor.call value
+        when Regexp, Symbol then value.inspect
         when String then value.dump
-        when Symbol then value.inspect
         when nil then "nil"
         else value
       end
