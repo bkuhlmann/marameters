@@ -6,12 +6,15 @@ module Marameters
     Defaulter = lambda do |value, extractor: Sourcers::Function.new|
       case value
         when Proc
+          name = Object.constants.find { Object.const_get(it) == value }
+
+          return name.to_s if name
           fail TypeError, "Use procs instead of lambdas for defaults." if value.lambda?
           fail ArgumentError, "Avoid using parameters for proc defaults." if value.arity.nonzero?
 
           extractor.call value
+        when Regexp, Symbol then value.inspect
         when String then value.dump
-        when Symbol then value.inspect
         when nil then "nil"
         else value
       end
