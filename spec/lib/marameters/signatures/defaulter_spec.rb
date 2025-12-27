@@ -8,6 +8,11 @@ RSpec.describe Marameters::Signatures::Defaulter do
   describe "#call" do
     let(:name) { "test" }
 
+    it "answers Proc when defined as a constant" do
+      stub_const "TEST", proc { Object.new }
+      expect(defaulter.call(TEST)).to eq("TEST")
+    end
+
     it "answers source code when wrapped in a Proc" do
       function = proc { Object.new }
       expect(defaulter.call(function)).to eq("Object.new")
