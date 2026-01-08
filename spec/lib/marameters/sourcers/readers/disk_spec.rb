@@ -15,15 +15,15 @@ RSpec.describe Marameters::Sourcers::Readers::Disk do
 
     it "answers method source" do
       object = Module.new do
-        def self.say text: :text
-          puts text
+        def self.as_string text: :text
+          String text
         end
       end
 
-      instructions = RubyVM::InstructionSequence.of object.method(:say)
+      instructions = RubyVM::InstructionSequence.of object.method(:as_string)
 
       expect(sourcer.call(instructions)).to eq(
-        "def self.say text: :text\n          puts text\n        end"
+        "def self.as_string text: :text\n          String text\n        end"
       )
     end
   end
