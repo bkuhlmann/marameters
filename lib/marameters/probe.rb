@@ -36,7 +36,7 @@ module Marameters
 
     def keywords? = keywords.any?
 
-    def keywords_for(*keys, **attributes)
+    def keywords_for *keys, **attributes
       attributes.select { |key| !keys.include?(key) || keywords.include?(key) }
     end
 
