@@ -29,6 +29,8 @@ detectors:
       - "Marameters::Signatures::Builder#call"
       - "Marameters::Signatures::Inheritor#merge"
       - "Marameters::Signatures::Super#merge"
+  UnusedParameters:
+    enabled: false
 
 directories:
   "spec/support/shared_contexts":
