@@ -5,9 +5,9 @@ require "forwardable"
 module Marameters
   # Provides information on a method's parameters.
   class Probe
-    extend Forwardable
-
     CATEGORIES = {positionals: %i[req opt], keywords: %i[keyreq key]}.freeze
+
+    extend Forwardable
 
     def self.of klass, name, collection: []
       method = klass.instance_method name
